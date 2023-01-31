@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -24,7 +25,7 @@ public class User extends UuidBasedEntity {
     @Column(length = 45, nullable = false)
     private String lastName;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -50,6 +51,6 @@ public class User extends UuidBasedEntity {
 
     @Override
     public int hashCode() {
-        return 0;
+        return Objects.hash(id);
     }
 }
