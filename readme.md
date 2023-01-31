@@ -17,9 +17,14 @@ For the sake of easier navigation I put swagger in.
 ```css
 http://localhost:8080/swagger-ui/index.html
 ```
-## Users
+## H2 Console
+<pre>
+url: jdbc:h2:mem:testDB
+user: sa
+no password
+</pre>
 ```css
-http://localhost:8080/users
+http://localhost:8080/h2-console
 ```
 
 ## Some notes
