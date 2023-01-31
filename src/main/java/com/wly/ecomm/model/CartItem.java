@@ -14,8 +14,9 @@ import lombok.*;
 @Setter
 public class CartItem extends UuidBasedEntity {
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
+    @ToString.Exclude
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)

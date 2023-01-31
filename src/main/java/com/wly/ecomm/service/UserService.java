@@ -42,15 +42,6 @@ public class UserService {
     public List<User> initUser() {
         var roles = roleService.initRole();
 
-        // add 4 admin users
-        var admins = List.of(
-                new User("admin1@domain.com", "Admin1", "admin"),
-                new User("admin@domain.com", "admin", "admin")
-        );
-
-        admins.forEach(user -> user.addRole(roles.get(0)));
-        repository.saveAll(admins);
-
         // add 4 customers
         var customers = List.of(
                 new User("customer1@customer_domain.com", "Customer1", "Customer"),
@@ -62,6 +53,15 @@ public class UserService {
 
         customers.forEach(user -> user.addRole(roles.get(1)));
         repository.saveAll(customers);
+
+        // add 2 admin users
+        var admins = List.of(
+                new User("admin1@domain.com", "Admin1", "admin"),
+                new User("admin@domain.com", "admin", "admin")
+        );
+
+        admins.forEach(user -> user.addRole(roles.get(0)));
+        repository.saveAll(admins);
 
         return customers;
     }

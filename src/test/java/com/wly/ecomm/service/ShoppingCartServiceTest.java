@@ -244,7 +244,7 @@ class ShoppingCartServiceTest {
         assertNotNull(cartItemFound);
         assertNotNull(cartItemFound.getId());
         assertEquals(product, cartItemFound.getProduct());
-        assertEquals(user, cartItemFound.getUser());
+        assertUserFieldEqual(user, cartItemFound.getUser());
         assertEquals(10, cartItemFound.getQuantity());
     }
 
@@ -278,5 +278,13 @@ class ShoppingCartServiceTest {
         assertEquals(1, cartService.deleteByUserAndProduct(user, product.getId()));
         cartItemFound = cartService.findByUserAndProduct(user, product);
         assertNull(cartItemFound);
+    }
+
+    void assertUserFieldEqual(User user1, User user2) {
+        assertEquals(user1.getId(), user2.getId());
+        assertEquals(user1.getEmail(), user2.getEmail());
+        assertEquals(user1.getRoles(), user2.getRoles());
+        assertEquals(user1.getFirstName(), user2.getFirstName());
+        assertEquals(user1.getLastName(), user2.getLastName());
     }
 }
