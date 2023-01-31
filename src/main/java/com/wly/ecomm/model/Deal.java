@@ -1,11 +1,16 @@
 package com.wly.ecomm.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -19,6 +24,29 @@ public class Deal extends SimpleIdBasedEntity {
 
     @Column(nullable = false)
     private String description;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @JsonIgnore
+    @JoinTable(
+            name = "products_deals",
+            joinColumns = @JoinColumn(name = "deal_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private final Set<Product> productSet = new HashSet<>();
+
+    public void addProduct(Product product) {
+        productSet.add(product);
+    }
+
+    public void removeProduct(Product product) {
+        productSet.remove(product);
+    }
+
+    public void addProducts(List<Product> productList) {
+        productSet.addAll(productList);
+    }
 
     @Override
     public boolean equals(Object o) {
