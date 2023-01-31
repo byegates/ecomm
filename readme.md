@@ -1,16 +1,22 @@
 # E-Commerce DEMO Project
 
 ## To run the app:
+### download jar
+[download jar file here](https://drive.google.com/file/d/1BteQPivoD9LDrbWMRcCYzPQ2FzQf6Xzo/view?usp=share_link)
+### run
 ```shell
 java -jar ecomm-0.0.1-SNAPSHOT.jar
 ```
 the project was built with jdk 17 + spring boot 3.0.2, it's config, app runs on default 8080 port.
-
+## you could also build it from source
+```shell
+./gradlew  clean build
+```
 ## To run tests
 ```shell
 ./gradlew  clean test
 ```
-Or if you have your own gradle setup you could also use that.
+If you have your own gradle setup you could also use that.
 
 ## End Points/Swagger
 For the sake of easier navigation I put swagger in.
