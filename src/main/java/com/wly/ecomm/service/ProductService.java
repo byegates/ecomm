@@ -38,6 +38,10 @@ public class ProductService {
         return repository.save(product);
     }
 
+    public List<Product> saveALl(List<Product> productList) {
+        return repository.saveAll(productList);
+    }
+
     public Product updateDeals(Integer id, String op, Integer dealId) {
         Deal deal = dealService.findById(dealId);
         Product product = findById(id);
@@ -63,17 +67,18 @@ public class ProductService {
                 new Product("iPhone 14 128GB", 799.00),
                 new Product("iPhone 14 Plus 128GB", 899.00)
         );
-        products1.forEach(product -> product.addDeal(BOGO50));
         repository.saveAll(products1);
-
+        BOGO50.addProducts(products1);
+        dealService.save(BOGO50);
 
         // products with deal 35% off
         var products2 = List.of(
                 new Product("iPhone 14 Pro 128GB", 999.00),
                 new Product("iPhone 14 Pro Max 128GB", 1099.00)
         );
-        products2.forEach(product -> product.addDeal(OFF35));
         repository.saveAll(products2);
+        OFF35.addProducts(products2);
+        dealService.save(OFF35);
 
         Product product5 = new Product("iPhone 14 256GB", 899.00);
         var BOGO100 = deals.get(1);

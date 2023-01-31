@@ -38,6 +38,10 @@ public class Product extends SimpleIdBasedEntity {
         deals.remove(deal);
     }
 
+    public void addDeals(List<Deal> dealList) {
+        deals.addAll(dealList);
+    }
+
     public void clearDeal() {
         deals.clear();
     }

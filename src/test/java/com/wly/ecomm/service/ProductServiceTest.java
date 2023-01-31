@@ -3,11 +3,13 @@ package com.wly.ecomm.service;
 import com.wly.ecomm.exception.UserDefinedException;
 import com.wly.ecomm.model.Deal;
 import com.wly.ecomm.model.Product;
-import com.wly.ecomm.repository.ProductRepository;
+import com.wly.ecomm.utils.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,13 +19,14 @@ class ProductServiceTest {
 
     private final ProductService productService;
     private final DealService dealService;
-    @Autowired
-    private ProductRepository productRepository;
+
+    private final TestUtil testUtil;
 
     @Autowired
-    public ProductServiceTest(ProductService productService, DealService dealService) {
+    public ProductServiceTest(ProductService productService, DealService dealService, TestUtil testUtil) {
         this.productService = productService;
         this.dealService = dealService;
+        this.testUtil = testUtil;
     }
 
     @Test
@@ -88,7 +91,7 @@ class ProductServiceTest {
     }
 
     @Test
-    void save() {
+    void save_1product() {
         Product product = new Product("PIXEL 7 PRO 128GB", 899.00);
         Product savedProduct = productService.save(product);
         assertNotNull(savedProduct);
@@ -97,6 +100,13 @@ class ProductServiceTest {
 
         assertEquals(product.getName(), savedProduct.getName());
         assertEquals(product.getPrice(), savedProduct.getPrice());
+    }
+
+    @Test
+    void saveAll_5Products() {
+        int numOfProducts = 5;
+        List<Product> productList = testUtil.prepareProducts(numOfProducts);
+        assertEquals(numOfProducts, productList.size());
     }
 
     @Test
@@ -140,8 +150,8 @@ class ProductServiceTest {
 
     Product prepare_1_product_with_deals(int numberOfDeals) {
         Product product = productService.save(new Product("TEST-PIXEL 7 PRO 128GB", 899.00));
-        for (int i = 0; i < numberOfDeals; i++)
-            product.addDeal(dealService.save(new Deal("OFF36", "36% OFF ORIGINAL PRICE - TEST")));
-        return productRepository.save(product);
+
+        product.addDeals(dealService.saveAll(testUtil.prepareDeals(numberOfDeals)));
+        return productService.save(product);
     }
 }

@@ -36,6 +36,10 @@ public class DealService {
         return repository.save(deal);
     }
 
+    public List<Deal> saveAll(List<Deal> dealList) {
+        return repository.saveAll(dealList);
+    }
+
     public List<Deal> initDeal() {
         return repository.saveAll(List.of(
                 new Deal("BOGO50", "BUY ONE GET ONE 50% OFF"),

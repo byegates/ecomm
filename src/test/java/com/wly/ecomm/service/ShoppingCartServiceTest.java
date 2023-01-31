@@ -69,12 +69,10 @@ class ShoppingCartServiceTest {
         );
 
         // two deals added only first one counts
-        products.get(0).addDeal(deals.get(0));
-        products.get(0).addDeal(deals.get(1));
+        products.get(0).addDeals(List.of(deals.get(0), deals.get(1)));
 
         // two deals added only first one counts
-        products.get(1).addDeal(deals.get(1));
-        products.get(1).addDeal(deals.get(2));
+        products.get(1).addDeals(List.of(deals.get(1), deals.get(2)));
 
         products.get(2).addDeal(deals.get(2));
         products.get(3).addDeal(deals.get(3));
