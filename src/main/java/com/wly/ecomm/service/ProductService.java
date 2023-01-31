@@ -35,7 +35,6 @@ public class ProductService {
     }
 
     public Product save(Product product) {
-        product.getDeals().clear();
         return repository.save(product);
     }
 

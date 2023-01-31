@@ -3,6 +3,7 @@ package com.wly.ecomm.service;
 import com.wly.ecomm.exception.UserDefinedException;
 import com.wly.ecomm.model.Deal;
 import com.wly.ecomm.model.Product;
+import com.wly.ecomm.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +17,8 @@ class ProductServiceTest {
 
     private final ProductService productService;
     private final DealService dealService;
+    @Autowired
+    private ProductRepository productRepository;
 
     @Autowired
     public ProductServiceTest(ProductService productService, DealService dealService) {
@@ -24,9 +27,49 @@ class ProductServiceTest {
     }
 
     @Test
-    void deleteById() {
+    void deleteById_delete1_normal_product() {
         Product product = productService.save(new Product("PIXEL 7 PRO 128GB", 899.00));
         assertNotNull(productService.findById(product.getId()));
+        productService.deleteById(product.getId());
+        assertThrows(UserDefinedException.class, () -> productService.findById(product.getId()));
+    }
+
+    @Test
+    void deleteById_delete1_product_with_2deals() {
+        int numberOfDeals = 2;
+        Product product = prepare_1_product_with_deals(numberOfDeals);
+        assertNotNull(product.getId());
+        assertEquals(numberOfDeals, product.getDeals().size());
+        productService.deleteById(product.getId());
+        assertThrows(UserDefinedException.class, () -> productService.findById(product.getId()));
+    }
+
+    @Test
+    void deleteById_delete1_product_with_10deals() {
+        int numberOfDeals = 10;
+        Product product = prepare_1_product_with_deals(numberOfDeals);
+        assertNotNull(product.getId());
+        assertEquals(numberOfDeals, product.getDeals().size());
+        productService.deleteById(product.getId());
+        assertThrows(UserDefinedException.class, () -> productService.findById(product.getId()));
+    }
+
+    @Test
+    void deleteById_delete1_product_with_5deals() {
+        int numberOfDeals = 5;
+        Product product = prepare_1_product_with_deals(numberOfDeals);
+        assertNotNull(product.getId());
+        assertEquals(numberOfDeals, product.getDeals().size());
+        productService.deleteById(product.getId());
+        assertThrows(UserDefinedException.class, () -> productService.findById(product.getId()));
+    }
+
+    @Test
+    void deleteById_delete1_product_with_20deals() {
+        int numberOfDeals = 20;
+        Product product = prepare_1_product_with_deals(numberOfDeals);
+        assertNotNull(product.getId());
+        assertEquals(numberOfDeals, product.getDeals().size());
         productService.deleteById(product.getId());
         assertThrows(UserDefinedException.class, () -> productService.findById(product.getId()));
     }
@@ -93,5 +136,12 @@ class ProductServiceTest {
     void updateDeals_ThrowExceptionOnInvalidProductId() {
         Deal deal1 = dealService.save(new Deal("45OFF", "45% OFF FULL PRICE"));
         assertThrows(UserDefinedException.class, () -> productService.updateDeals(Integer.MAX_VALUE, "update", deal1.getId()));
+    }
+
+    Product prepare_1_product_with_deals(int numberOfDeals) {
+        Product product = productService.save(new Product("TEST-PIXEL 7 PRO 128GB", 899.00));
+        for (int i = 0; i < numberOfDeals; i++)
+            product.addDeal(dealService.save(new Deal("OFF36", "36% OFF ORIGINAL PRICE - TEST")));
+        return productRepository.save(product);
     }
 }
