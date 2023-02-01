@@ -1,5 +1,8 @@
 # E-Commerce DEMO Project
 
+## [VIDEO DEMO](https://youtu.be/KTrA1xwZHoU)
+Video demo of important end points
+
 ## To run the app:
 ### download jar
 [download jar file here](https://drive.google.com/file/d/1BteQPivoD9LDrbWMRcCYzPQ2FzQf6Xzo/view?usp=share_link)
@@ -17,7 +20,6 @@ the project was built with jdk 17 + spring boot 3.0.2, it's config, app runs on 
 ./gradlew  clean test
 ```
 If you have your own gradle setup you could also use that.
-## [Video demo of important end points](https://youtu.be/KTrA1xwZHoU)
 ## End Points/Swagger
 For the sake of easier navigation I put swagger in.
 ```css
