@@ -1,5 +1,6 @@
 package com.wly.ecomm.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,6 +29,12 @@ public class User extends UuidBasedEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private final Set<Role> roles = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
+    @ToString.Exclude
+    @JsonIgnore
+    private final Set<CartItem> cartItems = new HashSet<>();
+
 
     public boolean addRole(Role role) {
         return roles.add(role);

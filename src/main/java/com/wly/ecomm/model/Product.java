@@ -1,5 +1,6 @@
 package com.wly.ecomm.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
@@ -25,6 +26,11 @@ public class Product extends SimpleIdBasedEntity {
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     private final Set<Deal> deals = new TreeSet<>(Comparator.comparingInt(SimpleIdBasedEntity::getId)); // For demo purpose only
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, orphanRemoval = true)
+    @ToString.Exclude
+    @JsonIgnore
+    private final Set<CartItem> cartItems = new HashSet<>();
 
     public void addDeal(Deal deal) {
         deals.add(deal);
