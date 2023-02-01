@@ -197,15 +197,17 @@ class ShoppingCartServiceTest {
     void findByUser() {
         User user = users.get(1);
         Product product1 = products.get(0), product2 = products.get(1), product3 = products.get(2);
-        cartService.addProduct(product1.getId(), 5, user);
-        cartService.addProduct(product2.getId(), 5, user);
-        cartService.addProduct(product3.getId(), 5, user);
+        int cartItemQuantity = 5;
+
+        cartService.addProduct(product1.getId(), cartItemQuantity, user);
+        cartService.addProduct(product2.getId(), cartItemQuantity, user);
+        cartService.addProduct(product3.getId(), cartItemQuantity, user);
 
         List<CartItem> cartItems = cartService.findByUser(user);
         assertEquals(3, cartItems.size());
         cartItems.forEach(cartItem -> {
             assertEquals(user, cartItem.getUser());
-            assertEquals(5, cartItem.getQuantity());
+            assertEquals(cartItemQuantity, cartItem.getQuantity());
         });
 
         assertEquals(product1, cartItems.get(0).getProduct());
@@ -217,61 +219,70 @@ class ShoppingCartServiceTest {
     void addProduct() {
         Product product = products.get(0);
         User user = users.get(0);
-        CartItem cartItem = cartService.addProduct(product.getId(), 5, user);
+        int cartItemQuantity = 5;
+
+        CartItem cartItem = cartService.addProduct(product.getId(), cartItemQuantity, user);
         assertNotNull(cartItem);
         assertNotNull(cartItem.getId());
         assertEquals(product, cartItem.getProduct());
         assertEquals(user, cartItem.getUser());
-        assertEquals(5, cartItem.getQuantity());
+        assertEquals(cartItemQuantity, cartItem.getQuantity());
     }
 
     @Test
     void updateQuantity() {
         Product product = products.get(1);
         User user = users.get(0);
-        CartItem cartItem = cartService.addProduct(product.getId(), 5, user);
+        int cartItemQuantity = 5;
+
+        CartItem cartItem = cartService.addProduct(product.getId(), cartItemQuantity, user);
         assertNotNull(cartItem);
         assertNotNull(cartItem.getId());
         assertEquals(product, cartItem.getProduct());
         assertEquals(user, cartItem.getUser());
-        assertEquals(5, cartItem.getQuantity());
+        assertEquals(cartItemQuantity, cartItem.getQuantity());
 
-        cartService.updateQuantity(product.getId(), 10, user.getId());
+        cartItemQuantity = 10;
+        cartService.updateQuantity(product.getId(), cartItemQuantity, user.getId());
         CartItem cartItemFound = cartService.findByUserAndProduct(user, product);
 
         assertNotNull(cartItemFound);
         assertNotNull(cartItemFound.getId());
         assertEquals(product, cartItemFound.getProduct());
         assertUserFieldEqual(user, cartItemFound.getUser());
-        assertEquals(10, cartItemFound.getQuantity());
+        assertEquals(cartItemQuantity, cartItemFound.getQuantity());
     }
 
     @Test
     void findByUserAndProduct() {
         Product product = products.get(2);
         User user = users.get(1);
-        cartService.addProduct(product.getId(), 5, user);
+        int cartItemQuantity = 5;
+
+        cartService.addProduct(product.getId(), cartItemQuantity, user);
         CartItem cartItemFound = cartService.findByUserAndProduct(user, product);
 
         assertNotNull(cartItemFound);
         assertNotNull(cartItemFound.getId());
         assertEquals(product, cartItemFound.getProduct());
         assertEquals(user, cartItemFound.getUser());
-        assertEquals(5, cartItemFound.getQuantity());
+        assertEquals(cartItemQuantity, cartItemFound.getQuantity());
     }
 
     @Test
     void deleteByUserAndProduct() {
         Product product = products.get(2);
         User user = users.get(1);
-        cartService.addProduct(product.getId(), 5, user);
+        int cartItemQuantity = 5;
+
+        cartService.addProduct(product.getId(), cartItemQuantity, user);
         CartItem cartItemFound = cartService.findByUserAndProduct(user, product);
 
         assertNotNull(cartItemFound);
         assertNotNull(cartItemFound.getId());
         assertEquals(product, cartItemFound.getProduct());
         assertEquals(user, cartItemFound.getUser());
-        assertEquals(5, cartItemFound.getQuantity());
+        assertEquals(cartItemQuantity, cartItemFound.getQuantity());
 
         assertEquals(1, cartService.deleteByUserAndProduct(user, product.getId()));
         cartItemFound = cartService.findByUserAndProduct(user, product);

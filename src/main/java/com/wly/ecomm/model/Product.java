@@ -8,11 +8,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import java.util.*;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
-@Getter
-@Setter
+@NoArgsConstructor @AllArgsConstructor @ToString @Getter @Setter
 public class Product extends SimpleIdBasedEntity {
     @Column(nullable = false)
     private String name;

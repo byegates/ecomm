@@ -1,6 +1,7 @@
 package com.wly.ecomm.repository;
 
 import com.wly.ecomm.model.CartItem;
+import com.wly.ecomm.model.CartItemId;
 import com.wly.ecomm.model.Product;
 import com.wly.ecomm.model.User;
 import com.wly.ecomm.service.ShoppingCartService;
@@ -15,7 +16,6 @@ import org.springframework.context.annotation.ComponentScan;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -87,15 +87,16 @@ class CartItemRepositoryTest {
     void GivenProductAndUser_WhenUpdateCartItemQuantity_ThenQuantityIsUpdatedSuccessfully() {
         var productToUpdateQuantity = products.get(0);
         var productNotToUpdateQuantity = products.get(1);
-        cartItemRepository.updateQuantity(10, productToUpdateQuantity.getId(), user.getId());
+        int updatedQuantity = 10;
+        cartItemRepository.updateQuantity(updatedQuantity, productToUpdateQuantity.getId(), user.getId());
         var carItemQuantityUpdated = cartItemRepository.findByUserAndProduct(user, productToUpdateQuantity);
         var carItemQuantityNotUpdated = cartItemRepository.findByUserAndProduct(user, productNotToUpdateQuantity);
 
         log.info("carItemQuantityUpdated : {}", carItemQuantityUpdated);
         log.info("carItemQuantityNotUpdated : {}", carItemQuantityNotUpdated);
 
-        assertEquals(5, carItemQuantityNotUpdated.getQuantity());
-        assertEquals(10, carItemQuantityUpdated.getQuantity());
+        assertEquals(INIT_QUANTITY, carItemQuantityNotUpdated.getQuantity());
+        assertEquals(updatedQuantity, carItemQuantityUpdated.getQuantity());
     }
 
     private void verifyCardItemAndUserAndProduct(CartItem cartItem, User user, Product product, int quantity) {
@@ -112,7 +113,7 @@ class CartItemRepositoryTest {
     private void verifyCardItem(CartItem cartItem) {
         assertNotNull(cartItem);
         assertNotNull(cartItem.getId());
-        assertInstanceOf(UUID.class, cartItem.getId());
+        assertInstanceOf(CartItemId.class, cartItem.getId());
     }
 
     private void verifyCardItem(CartItem cartItem, int quantity) {

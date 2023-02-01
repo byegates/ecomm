@@ -1,26 +1,40 @@
 package com.wly.ecomm.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
 @ToString
 @Getter
 @Setter
-public class CartItem extends UuidBasedEntity {
+public class CartItem {
+
+    @EmbeddedId
+    private CartItemId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("userId")
     @JsonIgnore
-    @ToString.Exclude
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @MapsId("productId")
     private Product product;
 
     private int quantity;
+
+    public CartItem(User user, Product product) {
+        this.id = new CartItemId(user.getId(), product.getId());
+        this.user = user;
+        this.product = product;
+    }
+
+    public CartItem(User user, Product product, int quantity) {
+        this.id = new CartItemId(user.getId(), product.getId());
+        this.user = user;
+        this.product = product;
+        this.quantity = quantity;
+    }
 }
