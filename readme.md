@@ -1,6 +1,7 @@
 # E-Commerce DEMO Project
 
-## [VIDEO DEMO of important end points](https://youtu.be/KTrA1xwZHoU)
+## [VIDEO DEMO](https://youtu.be/KTrA1xwZHoU)
+Video demo of important end points
 
 ## To run the app:
 ### download jar
