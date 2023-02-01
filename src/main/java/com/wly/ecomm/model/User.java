@@ -8,11 +8,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
-@Getter
-@Setter
+@NoArgsConstructor @AllArgsConstructor @ToString @Getter @Setter
 @Table(name = "users") // user is a keyword in h2, using users as table name
 public class User extends UuidBasedEntity {
 

@@ -109,6 +109,7 @@ class DealServiceTest {
     }
 
     @Test
+    @DirtiesContext
     void save_2_deals_1by1() {
         Deal deal1 = new Deal("45OFF", "45% OFF FULL PRICE");
         Deal deal2 = new Deal("BOGO50", "BUY ONE GET SECOND ONE 50% OFF");
@@ -119,6 +120,7 @@ class DealServiceTest {
     }
 
     @Test
+    @DirtiesContext
     void saveAll_5Deal() {
         int numOfDeals = 5;
         List<Deal> dealList = testUtil.prepareDeals(numOfDeals);

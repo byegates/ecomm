@@ -216,6 +216,7 @@ class ShoppingCartServiceTest {
     }
 
     @Test
+    @DirtiesContext
     void addProduct() {
         Product product = products.get(0);
         User user = users.get(0);
@@ -230,6 +231,7 @@ class ShoppingCartServiceTest {
     }
 
     @Test
+    @DirtiesContext
     void updateQuantity() {
         Product product = products.get(1);
         User user = users.get(0);
@@ -254,6 +256,7 @@ class ShoppingCartServiceTest {
     }
 
     @Test
+    @DirtiesContext
     void findByUserAndProduct() {
         Product product = products.get(2);
         User user = users.get(1);
@@ -270,6 +273,7 @@ class ShoppingCartServiceTest {
     }
 
     @Test
+    @DirtiesContext
     void deleteByUserAndProduct() {
         Product product = products.get(2);
         User user = users.get(1);

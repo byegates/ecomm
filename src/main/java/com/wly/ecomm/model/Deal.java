@@ -13,11 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
-@Getter
-@Setter
+@NoArgsConstructor @AllArgsConstructor @ToString @Getter @Setter
 public class Deal extends SimpleIdBasedEntity {
     @Column(nullable = false, length = 25)
     private String name;

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional
 @AllArgsConstructor
 public class ProductService {
     private final ProductRepository repository;
@@ -22,6 +21,7 @@ public class ProductService {
         return repository.findAll();
     }
 
+    @Transactional
     public void deleteById(Integer id) {
         repository.deleteById(id);
     }
@@ -34,14 +34,17 @@ public class ProductService {
         return maybeProduct.get();
     }
 
+    @Transactional
     public Product save(Product product) {
         return repository.save(product);
     }
 
+    @Transactional
     public List<Product> saveALl(List<Product> productList) {
         return repository.saveAll(productList);
     }
 
+    @Transactional
     public Product updateDeals(Integer id, String op, Integer dealId) {
         Deal deal = dealService.findById(dealId);
         Product product = findById(id);

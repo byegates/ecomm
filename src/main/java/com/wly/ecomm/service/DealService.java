@@ -32,10 +32,12 @@ public class DealService {
         return maybeDeal.get();
     }
 
+    @Transactional
     public Deal save(Deal deal) {
         return repository.save(deal);
     }
 
+    @Transactional
     public List<Deal> saveAll(List<Deal> dealList) {
         return repository.saveAll(dealList);
     }

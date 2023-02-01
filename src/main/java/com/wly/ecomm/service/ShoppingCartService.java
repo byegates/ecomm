@@ -14,7 +14,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@Transactional
 @AllArgsConstructor
 public class ShoppingCartService {
 
@@ -27,6 +26,7 @@ public class ShoppingCartService {
 
     public CartItem findByUserAndProduct(User user, Product product) {return repository.findByUserAndProduct(user, product);}
 
+    @Transactional
     public CartItem addProduct(Integer productId, Integer quantity, User user) {
         Product product = productService.findById(productId);
         CartItem cartItem = repository.findByUserAndProduct(user, product);
@@ -44,10 +44,12 @@ public class ShoppingCartService {
         return cartItem;
     }
 
+    @Transactional
     public void updateQuantity(Integer productId, Integer quantity, UUID userId) {
         repository.updateQuantity(quantity, productId, userId);
     }
 
+    @Transactional
     public int deleteByUserAndProduct(User user, Integer productId) {
         return repository.deleteByUserAndProduct(user, productService.findById(productId));
     }

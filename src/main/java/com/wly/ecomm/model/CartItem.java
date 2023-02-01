@@ -5,10 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@NoArgsConstructor
-@ToString
-@Getter
-@Setter
+@NoArgsConstructor @ToString @Getter @Setter
 public class CartItem {
 
     @EmbeddedId

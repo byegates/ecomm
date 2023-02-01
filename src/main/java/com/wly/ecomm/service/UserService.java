@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@Transactional
 @AllArgsConstructor
 public class UserService {
     private final UserRepository repository;
@@ -23,6 +22,7 @@ public class UserService {
         return repository.findAll();
     }
 
+    @Transactional
     public User save(User user) {
         return repository.save(user);
     }

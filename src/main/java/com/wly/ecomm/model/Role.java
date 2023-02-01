@@ -8,11 +8,7 @@ import org.hibernate.Hibernate;
 import java.util.Objects;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
-@Getter
-@Setter
+@NoArgsConstructor @AllArgsConstructor @ToString @Getter @Setter
 public class Role extends SimpleIdBasedEntity {
     @Column(length = 40, nullable = false, unique = true)
     private String name;
