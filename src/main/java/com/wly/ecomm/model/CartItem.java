@@ -12,6 +12,7 @@ import lombok.ToString;
 public class CartItem {
 
     @EmbeddedId
+    @JsonIgnore
     private CartItemId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
