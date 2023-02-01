@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 
-@Builder
-@Getter
+@Builder @Getter
 public class CartItemDto {
     @JsonProperty("product_name")
     private String productName;

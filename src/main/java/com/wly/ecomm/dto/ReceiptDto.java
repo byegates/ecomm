@@ -5,8 +5,7 @@ import lombok.*;
 
 import java.util.List;
 
-@Getter
-@Builder
+@Getter @Builder
 public class ReceiptDto {
     private final List<CartItemDto> cartItems;
 

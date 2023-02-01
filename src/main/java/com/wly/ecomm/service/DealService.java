@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional
 @AllArgsConstructor
 public class DealService {
     private final DealRepository repository;
@@ -20,7 +19,8 @@ public class DealService {
         return repository.findAll();
     }
 
-    public void deleteById(Integer id) {
+    @Transactional
+    public void deleteById(int id) {
         repository.deleteById(id);
     }
 
@@ -32,8 +32,14 @@ public class DealService {
         return maybeDeal.get();
     }
 
+    @Transactional
     public Deal save(Deal deal) {
         return repository.save(deal);
+    }
+
+    @Transactional
+    public List<Deal> saveAll(List<Deal> dealList) {
+        return repository.saveAll(dealList);
     }
 
     public List<Deal> initDeal() {

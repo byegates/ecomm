@@ -2,10 +2,7 @@ package com.wly.ecomm.service;
 
 import com.wly.ecomm.dto.CartItemDto;
 import com.wly.ecomm.dto.ReceiptDto;
-import com.wly.ecomm.model.CartItem;
-import com.wly.ecomm.model.Deal;
-import com.wly.ecomm.model.Product;
-import com.wly.ecomm.model.User;
+import com.wly.ecomm.model.*;
 import com.wly.ecomm.repository.CartItemRepository;
 import com.wly.ecomm.utils.MathUtils;
 import jakarta.transaction.Transactional;
@@ -17,7 +14,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@Transactional
 @AllArgsConstructor
 public class ShoppingCartService {
 
@@ -30,15 +26,14 @@ public class ShoppingCartService {
 
     public CartItem findByUserAndProduct(User user, Product product) {return repository.findByUserAndProduct(user, product);}
 
+    @Transactional
     public CartItem addProduct(Integer productId, Integer quantity, User user) {
         Product product = productService.findById(productId);
         CartItem cartItem = repository.findByUserAndProduct(user, product);
 
         int updatedQuantity = quantity;
         if (cartItem == null) {
-            cartItem = new CartItem();
-            cartItem.setProduct(product);
-            cartItem.setUser(user);
+            cartItem = new CartItem(user, product);
         } else {
             updatedQuantity = cartItem.getQuantity() + quantity;
         }
@@ -49,10 +44,12 @@ public class ShoppingCartService {
         return cartItem;
     }
 
+    @Transactional
     public void updateQuantity(Integer productId, Integer quantity, UUID userId) {
         repository.updateQuantity(quantity, productId, userId);
     }
 
+    @Transactional
     public int deleteByUserAndProduct(User user, Integer productId) {
         return repository.deleteByUserAndProduct(user, productService.findById(productId));
     }

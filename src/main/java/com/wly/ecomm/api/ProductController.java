@@ -21,7 +21,7 @@ public class ProductController {
 
     @PostMapping(consumes = "application/json")
     public Product create(@Valid @RequestBody Product product) {
-        product.getDeals().clear();
+        product.clearDeal();
         return service.save(product);
     }
 
