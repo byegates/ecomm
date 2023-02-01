@@ -17,7 +17,7 @@ the project was built with jdk 17 + spring boot 3.0.2, it's config, app runs on 
 ./gradlew  clean test
 ```
 If you have your own gradle setup you could also use that.
-
+## [Video demo of important end points](https://youtu.be/KTrA1xwZHoU)
 ## End Points/Swagger
 For the sake of easier navigation I put swagger in.
 ```css
@@ -33,7 +33,13 @@ no password
 http://localhost:8080/h2-console
 ```
 
-## Some notes
+## Notes Regarding Endpoints
+- adding or remove deal to product, you need to specific a action, it's either 'add' or 'remove' are right now supported
+```shell
+http://localhost:8080/products/{id}/{action}/{dealId}
+```
+
+## More notes
 ### User/customer Management and Security/Authentication
 - Due to time constrain, user/customer management and security/authentication is not built
 - I created two roles: ADMIN, CUSTOMER and a few users for demo purpose
