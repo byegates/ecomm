@@ -26,8 +26,7 @@ class ProductServiceTest {
 
     @Autowired private EntityManager em;
 
-    @Test
-    @Transactional
+    @Test @Transactional
     void deleteById_delete1_normal_product() {
         Product product = productService.save(new Product("PIXEL 7 PRO 128GB", 899.00));
         assertNotNull(productService.findById(product.getId()));
@@ -35,44 +34,40 @@ class ProductServiceTest {
         assertThrows(UserDefinedException.class, () -> productService.findById(product.getId()));
     }
 
-    @Test
-    @Transactional
+    @Test @Transactional
     void deleteById_delete1_product_with_2deals() {
         int numberOfDeals = 2;
-        Product product = testUtil.prepareProductWithDeals(numberOfDeals);
+        Product product = testUtil.getProductWithDeals(numberOfDeals);
         assertNotNull(product.getId());
         assertEquals(numberOfDeals, product.getDeals().size());
         productService.deleteById(product.getId());
         assertThrows(UserDefinedException.class, () -> productService.findById(product.getId()));
     }
 
-    @Test
-    @Transactional
+    @Test @Transactional
     void deleteById_delete1_product_with_10deals() {
         int numberOfDeals = 10;
-        Product product = testUtil.prepareProductWithDeals(numberOfDeals);
+        Product product = testUtil.getProductWithDeals(numberOfDeals);
         assertNotNull(product.getId());
         assertEquals(numberOfDeals, product.getDeals().size());
         productService.deleteById(product.getId());
         assertThrows(UserDefinedException.class, () -> productService.findById(product.getId()));
     }
 
-    @Test
-    @Transactional
+    @Test @Transactional
     void deleteById_delete1_product_with_5deals() {
         int numberOfDeals = 5;
-        Product product = testUtil.prepareProductWithDeals(numberOfDeals);
+        Product product = testUtil.getProductWithDeals(numberOfDeals);
         assertNotNull(product.getId());
         assertEquals(numberOfDeals, product.getDeals().size());
         productService.deleteById(product.getId());
         assertThrows(UserDefinedException.class, () -> productService.findById(product.getId()));
     }
 
-    @Test
-    @Transactional
+    @Test @Transactional
     void deleteById_delete1_product_with_20deals() {
         int numberOfDeals = 20;
-        Product product = testUtil.prepareProductWithDeals(numberOfDeals);
+        Product product = testUtil.getProductWithDeals(numberOfDeals);
         assertNotNull(product.getId());
         assertEquals(numberOfDeals, product.getDeals().size());
         productService.deleteById(product.getId());
@@ -92,8 +87,7 @@ class ProductServiceTest {
 
     }
 
-    @Test
-    @Transactional
+    @Test @Transactional
     void save_1product() {
         Product product = new Product("PIXEL 7 PRO 128GB", 899.00);
         Product savedProduct = productService.save(product);
@@ -105,19 +99,17 @@ class ProductServiceTest {
         assertEquals(product.getPrice(), savedProduct.getPrice());
     }
 
-    @Test
-    @Transactional
+    @Test @Transactional
     void saveAll_5Products() {
         int numOfProducts = 5;
-        List<Product> productList = testUtil.prepareProducts(numOfProducts);
+        List<Product> productList = testUtil.getProductList(numOfProducts);
         assertEquals(numOfProducts, productList.size());
     }
 
-    @Test
-    @Transactional
+    @Test @Transactional
     void updateDeals() {
-        Deal deal1 = testUtil.prepareDealWithProducts(0);
-        Deal deal2 = testUtil.prepareDealWithProducts(0);
+        Deal deal1 = testUtil.getDealWithProducts(0);
+        Deal deal2 = testUtil.getDealWithProducts(0);
         Product product = productService.save(new Product("PIXEL 7 PRO 128GB", 899.00));
         product = productService.updateDeals(product.getId(), "add", deal1.getId());
         assertEquals(1, product.getDeals().size());
@@ -129,10 +121,9 @@ class ProductServiceTest {
         assertEquals(1, product.getDeals().size());
     }
 
-    @Test
-    @Transactional
+    @Test @Transactional
     void updateDeals_ThrowExceptionOnInvalidActionCode() {
-        Deal deal = testUtil.prepareDealWithProducts(1);
+        Deal deal = testUtil.getDealWithProducts(1);
         Product product = productService.save(new Product("PIXEL 7 PRO 128GB", 899.00));
         product = productService.updateDeals(product.getId(), "add", deal.getId());
         assertEquals(1, product.getDeals().size());
@@ -141,18 +132,16 @@ class ProductServiceTest {
         assertThrows(UserDefinedException.class, () -> productService.updateDeals(productId, "update", deal.getId()));
     }
 
-    @Test
-    @Transactional
+    @Test @Transactional
     void updateDeals_ThrowExceptionOnInvalidDealId() {
         Product product = productService.save(new Product("PIXEL 7 PRO 128GB", 899.00));
         int productId = product.getId();
         assertThrows(UserDefinedException.class, () -> productService.updateDeals(productId, "update", Integer.MAX_VALUE));
     }
 
-    @Test
-    @Transactional
+    @Test @Transactional
     void updateDeals_ThrowExceptionOnInvalidProductId() {
-        Deal deal = testUtil.prepareDealWithProducts(0);
+        Deal deal = testUtil.getDealWithProducts(0);
         assertThrows(UserDefinedException.class, () -> productService.updateDeals(Integer.MAX_VALUE, "update", deal.getId()));
     }
 
@@ -161,11 +150,10 @@ class ProductServiceTest {
      * Besides, testUtil.getDealCount, testUtil.getProductCount and testUtil.getProductDealCountByDeal
      * uses jdbcTemplate with native sql to get accurate count
      */
-    @Test
-    @Transactional
+    @Test @Transactional
     void OnDeleteCascade_delete_product_with2Deals_also_delete_relationship() {
         int numOfDeals = 2;
-        var product = testUtil.prepareProductWithDeals(numOfDeals);
+        var product = testUtil.getProductWithDeals(numOfDeals);
         em.flush();
         assertEquals(numOfDeals, testUtil.getProductDealCountByProduct(product));
         productService.deleteById(product.getId());
@@ -173,11 +161,10 @@ class ProductServiceTest {
         assertEquals(0, testUtil.getProductDealCountByProduct(product));
     }
 
-    @Test
-    @Transactional
+    @Test @Transactional
     void OnDeleteCascade_delete_product_with20Deals_also_delete_relationship() {
         int numOfDeals = 20;
-        var product = testUtil.prepareProductWithDeals(numOfDeals);
+        var product = testUtil.getProductWithDeals(numOfDeals);
         em.flush();
         assertEquals(numOfDeals, testUtil.getProductDealCountByProduct(product));
         productService.deleteById(product.getId());
