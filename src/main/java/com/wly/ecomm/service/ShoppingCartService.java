@@ -2,6 +2,7 @@ package com.wly.ecomm.service;
 
 import com.wly.ecomm.dto.CartItemDto;
 import com.wly.ecomm.dto.ReceiptDto;
+import com.wly.ecomm.dto.UserDTO;
 import com.wly.ecomm.model.*;
 import com.wly.ecomm.repository.CartItemRepository;
 import com.wly.ecomm.utils.MathUtils;
@@ -30,13 +31,11 @@ public class ShoppingCartService {
 
     @Transactional
     public CartItem addProduct(UUID userId, Integer productId, Integer quantity) {
-        Product product = productService.findById(productId);
-        var user = userService.findById(userId);
-        CartItem cartItem = repository.findByUserAndProduct(user, product);
+        CartItem cartItem = repository.findByUserIdAndProductId(userId, productId);
 
         int updatedQuantity = quantity;
         if (cartItem == null) {
-            cartItem = new CartItem(user, product);
+            cartItem = new CartItem(userService.findById(userId), productService.findById(productId));
         } else {
             updatedQuantity = cartItem.getQuantity() + quantity;
         }
@@ -54,7 +53,7 @@ public class ShoppingCartService {
 
     @Transactional
     public int deleteByUserAndProduct(UUID userId, Integer productId) {
-        return repository.deleteByUserAndProduct(userService.findById(userId), productService.findById(productId));
+        return repository.deleteByUserIdAndProductId(userId, productId);
     }
 
     public ReceiptDto viewReceipt(User user) {
@@ -96,14 +95,24 @@ public class ShoppingCartService {
     private Double applyDeals(String dealApplied, int quantity) {
         double totalPercentageOff = .0;
         if (dealApplied.startsWith("OFF")) {
-            totalPercentageOff = Integer.parseInt(dealApplied.substring(3)) / 100.0;
+            totalPercentageOff = Double.parseDouble(dealApplied.substring(3)) / 100.0;
         } else if (dealApplied.startsWith("BOGO")) {
-            double bogoPercentageOff = Integer.parseInt(dealApplied.substring(4)) / 100.0;
+            double bogoPercentageOff = Double.parseDouble(dealApplied.substring(4)) / 100.0;
             int bogoAppliedQuantity = quantity / 2;
             totalPercentageOff = 1 - ((1-bogoPercentageOff) * bogoAppliedQuantity + quantity - bogoAppliedQuantity) / quantity;
         }
 
         return totalPercentageOff;
+    }
+
+    public UserDTO findUserDtoById(UUID id) {
+        User user = userService.findById(id);
+        return UserDTO.builder()
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .receiptDto(viewReceipt(user))
+                .build();
     }
 
     public void initCartItem(List<User> customers, List<Product> products) {

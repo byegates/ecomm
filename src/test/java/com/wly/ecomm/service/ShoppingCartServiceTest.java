@@ -1,5 +1,6 @@
 package com.wly.ecomm.service;
 
+import com.wly.ecomm.dto.UserDTO;
 import com.wly.ecomm.model.CartItem;
 import com.wly.ecomm.model.Product;
 import com.wly.ecomm.model.User;
@@ -58,6 +59,14 @@ class ShoppingCartServiceTest {
         }
 
         return .0;
+    }
+
+    private static void assertCartItem(Product product, User user, int quantity, CartItem cartItem) {
+        assertNotNull(cartItem);
+        assertNotNull(cartItem.getId());
+        assertEquals(product, cartItem.getProduct());
+        assertEquals(user.getId(), cartItem.getUser().getId());
+        assertEquals(quantity, cartItem.getQuantity());
     }
 
     @Test @Transactional
@@ -161,73 +170,53 @@ class ShoppingCartServiceTest {
     void addProduct_simple_quantity5() {
         Product product = testUtil.getProductWithDeals(0);
         User user = testUtil.getUser(Thread.currentThread().getStackTrace()[1].getMethodName());
-        int cartItemQuantity = 5;
-
-        CartItem cartItem = cartService.addProduct(user.getId(), product.getId(), cartItemQuantity);
-        assertNotNull(cartItem);
-        assertNotNull(cartItem.getId());
-        assertEquals(product, cartItem.getProduct());
-        assertEquals(user, cartItem.getUser());
-        assertEquals(cartItemQuantity, cartItem.getQuantity());
+        int quantity = 5;
+        assertCartItem(product, user, quantity, cartService.addProduct(user.getId(), product.getId(), quantity));
     }
 
     @Test @Transactional
     void updateQuantity() {
         Product product = testUtil.getProductWithDeals(0);
         User user = testUtil.getUser(Thread.currentThread().getStackTrace()[1].getMethodName());
-        int cartItemQuantity = 5;
+        int quantity = 5;
+        assertCartItem(product, user, quantity, cartService.addProduct(user.getId(), product.getId(), quantity));
 
-        CartItem cartItem = cartService.addProduct(user.getId(), product.getId(), cartItemQuantity);
-        assertNotNull(cartItem);
-        assertNotNull(cartItem.getId());
-        assertEquals(product, cartItem.getProduct());
-        assertEquals(user, cartItem.getUser());
-        assertEquals(cartItemQuantity, cartItem.getQuantity());
-
-        cartItemQuantity = 10;
-        cartService.updateQuantity(user.getId(), product.getId(), cartItemQuantity);
-        CartItem cartItemFound = cartService.findByUserAndProduct(user, product);
-
-        assertNotNull(cartItemFound);
-        assertNotNull(cartItemFound.getId());
-        assertEquals(product, cartItemFound.getProduct());
-        assertEquals(user.getId(), cartItemFound.getUser().getId());
-        assertEquals(cartItemQuantity, cartItemFound.getQuantity());
+        quantity = 10;
+        cartService.updateQuantity(user.getId(), product.getId(), quantity);
+        assertCartItem(product, user, quantity, cartService.findByUserAndProduct(user, product));
     }
 
     @Test @Transactional
     void findByUserAndProduct() {
         Product product = testUtil.getProductWithDeals(0);
         User user = testUtil.getUser(Thread.currentThread().getStackTrace()[1].getMethodName());
-        int cartItemQuantity = 5;
-
-        cartService.addProduct(user.getId(), product.getId(), cartItemQuantity);
-        CartItem cartItemFound = cartService.findByUserAndProduct(user, product);
-
-        assertNotNull(cartItemFound);
-        assertNotNull(cartItemFound.getId());
-        assertEquals(product, cartItemFound.getProduct());
-        assertEquals(user.getId(), cartItemFound.getUser().getId());
-        assertEquals(cartItemQuantity, cartItemFound.getQuantity());
+        int quantity = 5;
+        cartService.addProduct(user.getId(), product.getId(), quantity);
+        assertCartItem(product, user, quantity, cartService.findByUserAndProduct(user, product));
     }
 
     @Test
     void deleteByUserAndProduct() {
         Product product = testUtil.getProductWithDeals(0);
         User user = testUtil.getUser(Thread.currentThread().getStackTrace()[1].getMethodName());
-        int cartItemQuantity = 5;
+        int quantity = 5;
 
-        cartService.addProduct(user.getId(), product.getId(), cartItemQuantity);
-        CartItem cartItemFound = cartService.findByUserAndProduct(user, product);
-
-        assertNotNull(cartItemFound);
-        assertNotNull(cartItemFound.getId());
-        assertEquals(product, cartItemFound.getProduct());
-        assertEquals(user.getId(), cartItemFound.getUser().getId());
-        assertEquals(cartItemQuantity, cartItemFound.getQuantity());
+        cartService.addProduct(user.getId(), product.getId(), quantity);
+        assertCartItem(product, user, quantity, cartService.findByUserAndProduct(user, product));
 
         assertEquals(1, cartService.deleteByUserAndProduct(user.getId(), product.getId()));
-        cartItemFound = cartService.findByUserAndProduct(user, product);
-        assertNull(cartItemFound);
+        assertNull(cartService.findByUserAndProduct(user, product));
+    }
+
+    @Test @Transactional
+    void findUserDtoById() {
+        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+        User user = testUtil.getUser(methodName);
+        int cartItemQuantity = 5;
+
+        cartService.addProduct(user.getId(), testUtil.getProductWithDeals(0).getId(), cartItemQuantity);
+        cartService.addProduct(user.getId(), testUtil.getProductWithDeals(1).getId(), cartItemQuantity);
+        UserDTO userDTO = cartService.findUserDtoById(user.getId());
+        assertEquals(2, userDTO.getReceiptDto().getCartItems().size());
     }
 }

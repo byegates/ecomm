@@ -25,13 +25,19 @@ public class TestUtil {
     private final JdbcTemplate jdbcTemplate;
 
     public Deal getDealWithProducts(int numberOfProducts) {
-        Deal deal = new Deal("OFF37", "TestUtil.prepareDealWithProducts - 37% OFF ORIGINAL PRICE");
+        Deal deal = new Deal(createDealCode(), "TestUtil.prepareDealWithProducts - 37% OFF ORIGINAL PRICE");
         deal.addProducts(getProductList(numberOfProducts));
         return dealService.save(deal);
     }
 
+    private String createDealCode() {
+        var rand = Math.random();
+        String dealType = rand < .4 ? "OFF" : rand < .8 ? "BOGO" : "NODEAL";
+        return String.format("%s%f", dealType, MathUtils.getOffPercentage());
+    }
+
     public Product getProductWithDeals(int numberOfDeals) {
-        Product product = new Product("TestUtil.prepareProductWithDeals-PIXEL 7 PRO 128GB", 899.00);
+        Product product = new Product("TestUtil.prepareProductWithDeals-PIXEL 7 PRO 128GB", MathUtils.getPrice());
         product.addDeals(getDealList(numberOfDeals));
         return productService.save(product);
     }
@@ -47,7 +53,7 @@ public class TestUtil {
     public List<Product> getProductList(int numberOfProducts) {
         List<Product> productList = new ArrayList<>();
         for (int i = 0; i < numberOfProducts; i++) {
-            Product product = new Product(String.format("TestUtil.prepareProducts-PIXEL 7 PRO 128G-%2d", i), 799.00 + i);
+            Product product = new Product(String.format("TestUtil.prepareProducts-PIXEL 7 PRO 128G-%2d", i), MathUtils.getPrice());
             productList.add(product);
         }
         return productList;
@@ -57,7 +63,7 @@ public class TestUtil {
         List<Deal> dealList = new ArrayList<>();
 
         for (int i = 0; i < numberOfDeals; i++) {
-            dealList.add(new Deal("OFF36", "36% OFF ORIGINAL PRICE - TestUtil.prepareDeals"));
+            dealList.add(new Deal(createDealCode(), "TestUtil.prepareDeals"));
         }
         return dealList;
     }

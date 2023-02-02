@@ -6,21 +6,21 @@ import lombok.Getter;
 
 @Builder @Getter
 public class CartItemDto {
-    @JsonProperty("product_name")
+    @JsonProperty("Product Name")
     private String productName;
 
-    @JsonProperty("deal_applied")
+    @JsonProperty("Deal Applied")
     private String dealApplied;
 
-    @JsonProperty("price")
+    @JsonProperty("Price")
     private Double price;
 
-    @JsonProperty("price_after_discount")
+    @JsonProperty("Price After Discount")
     private Double priceAfterDiscount;
 
-    @JsonProperty("quantity")
+    @JsonProperty("Quantity")
     private Integer quantity;
 
-    @JsonProperty("subtotal")
+    @JsonProperty("Subtotal")
     private Double subtotal;
 }

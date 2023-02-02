@@ -7,8 +7,10 @@ import java.util.List;
 
 @Getter @Builder
 public class ReceiptDto {
+
+    @JsonProperty("Cart Items")
     private final List<CartItemDto> cartItems;
 
-    @JsonProperty("total_due")
+    @JsonProperty("Total Due")
     private Double totalDue;
 }
