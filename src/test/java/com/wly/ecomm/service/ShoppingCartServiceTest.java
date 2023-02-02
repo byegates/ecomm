@@ -141,7 +141,7 @@ class ShoppingCartServiceTest {
         int cartItemQuantity = 5, numOfProducts = 3;
         var deal = testUtil.getDealWithProducts(numOfProducts);
 
-        var productList = deal.getProductSet().stream().toList();
+        var productList = deal.getProducts().stream().toList();
         productList.forEach(product -> cartService.addProduct(product.getId(), cartItemQuantity, user));
 
         List<CartItem> cartItems = cartService.findByUser(user);

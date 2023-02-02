@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +39,7 @@ public class DealService {
     }
 
     @Transactional
-    public List<Deal> saveAll(List<Deal> dealList) {
+    public List<Deal> saveAll(Collection<Deal> dealList) {
         return repository.saveAll(dealList);
     }
 

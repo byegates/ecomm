@@ -21,7 +21,7 @@ public class Role extends SimpleIdBasedEntity {
     @ToString.Exclude
     @JsonIgnore
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private final Set<User> userSet = new HashSet<>();
+    private final Set<User> users = new HashSet<>();
 
     @PrePersist
     private void setNameUpperCase() {
