@@ -8,7 +8,18 @@ certain behavior maybe slightly different from video, and end points are more th
 Key behaviors and endpoints should be the same.
 </pre>
 
-## To run the app:
+## See the App working on AWS directly
+This is just another optional way to play with this app
+- All data are persisted in aws RDS(mysql), so data you edit is going to be permanent.
+- [Root Endpoint](http://ecomm.us-east-1.elasticbeanstalk.com/)
+  - Nothing here actually
+- [One user's shopping cart](http://ecomm.us-east-1.elasticbeanstalk.com/users/25ea3aea-b62f-4641-a0a8-29ccfd490150/cart)
+  - [Same user's receipt of current shopping cart](http://ecomm.us-east-1.elasticbeanstalk.com/users/25ea3aea-b62f-4641-a0a8-29ccfd490150/receipt)
+  - Please do not delete this user ID :)
+- [Current products with its associated deals](http://ecomm.us-east-1.elasticbeanstalk.com/products)
+- [swagger of aws app](http://ecomm.us-east-1.elasticbeanstalk.com/swagger-ui/index.html#/)
+
+## To run the app locally:
 ### download jar
 [download jar file here](https://drive.google.com/file/d/1BteQPivoD9LDrbWMRcCYzPQ2FzQf6Xzo/view?usp=share_link)
 ### run
