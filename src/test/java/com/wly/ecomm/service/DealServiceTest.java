@@ -69,7 +69,7 @@ class DealServiceTest {
         int numberOfProducts = 2;
         Deal deal = testUtil.getDealWithProducts(numberOfProducts);
         assertNotNull(deal.getId());
-        assertEquals(numberOfProducts, deal.getProductSet().size());
+        assertEquals(numberOfProducts, deal.getProducts().size());
         dealService.deleteById(deal.getId());
         assertThrows(UserDefinedException.class, () -> dealService.findById(deal.getId()));
     }
@@ -80,7 +80,7 @@ class DealServiceTest {
         int numberOfProducts = 20;
         Deal deal = testUtil.getDealWithProducts(numberOfProducts);
         assertNotNull(deal.getId());
-        assertEquals(numberOfProducts, deal.getProductSet().size());
+        assertEquals(numberOfProducts, deal.getProducts().size());
         dealService.deleteById(deal.getId());
         assertThrows(UserDefinedException.class, () -> dealService.findById(deal.getId()));
     }
@@ -91,7 +91,7 @@ class DealServiceTest {
         int numberOfProducts = 5;
         Deal deal = testUtil.getDealWithProducts(numberOfProducts);
         assertNotNull(deal.getId());
-        assertEquals(numberOfProducts, deal.getProductSet().size());
+        assertEquals(numberOfProducts, deal.getProducts().size());
         dealService.deleteById(deal.getId());
         assertThrows(UserDefinedException.class, () -> dealService.findById(deal.getId()));
     }

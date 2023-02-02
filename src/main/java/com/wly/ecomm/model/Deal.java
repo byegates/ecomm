@@ -7,10 +7,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @NoArgsConstructor @AllArgsConstructor @ToString @Getter @Setter
@@ -30,18 +27,18 @@ public class Deal extends SimpleIdBasedEntity {
     @ToString.Exclude
     @JsonIgnore
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private final Set<Product> productSet = new HashSet<>();
+    private final Set<Product> products = new HashSet<>();
 
     public void addProduct(Product product) {
-        productSet.add(product);
+        products.add(product);
     }
 
     public void removeProduct(Product product) {
-        productSet.remove(product);
+        products.remove(product);
     }
 
-    public void addProducts(List<Product> productList) {
-        productSet.addAll(productList);
+    public void addProducts(Collection<Product> products) {
+        this.products.addAll(products);
     }
 
     @Override

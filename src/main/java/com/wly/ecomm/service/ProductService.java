@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +41,7 @@ public class ProductService {
     }
 
     @Transactional
-    public List<Product> saveALl(List<Product> productList) {
+    public List<Product> saveALl(Collection<Product> productList) {
         return repository.saveAll(productList);
     }
 
