@@ -53,8 +53,8 @@ class DealServiceTest {
         assertEquals(deal2, foundDeal2);
 
         // asserts all other fields are equal
-        assertEqualsWithoutId(deal1, foundDeal1);
-        assertEqualsWithoutId(deal2, foundDeal2);
+        assertDealEqualsWithoutId(deal1, foundDeal1);
+        assertDealEqualsWithoutId(deal2, foundDeal2);
 
         dealService.deleteById(deal1.getId());
         assertThrows(UserDefinedException.class, () -> dealService.findById(deal1.getId()));
@@ -67,7 +67,7 @@ class DealServiceTest {
     @Transactional
     void deleteById_1deal_with_2products() {
         int numberOfProducts = 2;
-        Deal deal = testUtil.prepareDealWithProducts(numberOfProducts);
+        Deal deal = testUtil.getDealWithProducts(numberOfProducts);
         assertNotNull(deal.getId());
         assertEquals(numberOfProducts, deal.getProductSet().size());
         dealService.deleteById(deal.getId());
@@ -78,7 +78,7 @@ class DealServiceTest {
     @Transactional
     void deleteById_1deal_with_20products() {
         int numberOfProducts = 20;
-        Deal deal = testUtil.prepareDealWithProducts(numberOfProducts);
+        Deal deal = testUtil.getDealWithProducts(numberOfProducts);
         assertNotNull(deal.getId());
         assertEquals(numberOfProducts, deal.getProductSet().size());
         dealService.deleteById(deal.getId());
@@ -89,7 +89,7 @@ class DealServiceTest {
     @Transactional
     void deleteById_1deal_with_5products() {
         int numberOfProducts = 5;
-        Deal deal = testUtil.prepareDealWithProducts(numberOfProducts);
+        Deal deal = testUtil.getDealWithProducts(numberOfProducts);
         assertNotNull(deal.getId());
         assertEquals(numberOfProducts, deal.getProductSet().size());
         dealService.deleteById(deal.getId());
@@ -115,8 +115,8 @@ class DealServiceTest {
         assertEquals(deal2, foundDeal2);
 
         // asserts all other fields are equal
-        assertEqualsWithoutId(deal1, foundDeal1);
-        assertEqualsWithoutId(deal2, foundDeal2);
+        assertDealEqualsWithoutId(deal1, foundDeal1);
+        assertDealEqualsWithoutId(deal2, foundDeal2);
     }
 
     @Test
@@ -126,15 +126,15 @@ class DealServiceTest {
         Deal deal2 = new Deal("BOGO50", "BUY ONE GET SECOND ONE 50% OFF");
         Deal saveDeal1 = dealService.save(deal1);
         Deal saveDeal2 = dealService.save(deal2);
-        assertEqualsWithoutId(deal1, saveDeal1);
-        assertEqualsWithoutId(deal2, saveDeal2);
+        assertDealEqualsWithoutId(deal1, saveDeal1);
+        assertDealEqualsWithoutId(deal2, saveDeal2);
     }
 
     @Test
     @Transactional
     void saveAll_5Deal() {
         int numOfDeals = 5;
-        List<Deal> dealList = testUtil.prepareDeals(numOfDeals);
+        List<Deal> dealList = testUtil.getDealList(numOfDeals);
         assertEquals(numOfDeals, dealList.size());
     }
 
@@ -147,7 +147,7 @@ class DealServiceTest {
     @Transactional
     void OnDeleteCascade_delete_deal_with2Products_also_delete_relationship() {
         int numOfProducts = 2;
-        var deal = testUtil.prepareDealWithProducts(numOfProducts);
+        var deal = testUtil.getDealWithProducts(numOfProducts);
         em.flush();
         assertEquals(numOfProducts, testUtil.getProductDealCountByDeal(deal));
         dealService.deleteById(deal.getId());
@@ -159,7 +159,7 @@ class DealServiceTest {
     @Transactional
     void OnDeleteCascade_delete_deal_with20Products_also_delete_relationship() {
         int numOfProducts = 20;
-        var deal = testUtil.prepareDealWithProducts(numOfProducts);
+        var deal = testUtil.getDealWithProducts(numOfProducts);
         em.flush();
         assertEquals(numOfProducts, testUtil.getProductDealCountByDeal(deal));
         dealService.deleteById(deal.getId());
@@ -167,7 +167,7 @@ class DealServiceTest {
         assertEquals(0, testUtil.getProductDealCountByDeal(deal));
     }
 
-    private void assertEqualsWithoutId(Deal deal, Deal savedDeal) {
+    private void assertDealEqualsWithoutId(Deal deal, Deal savedDeal) {
         assertNotNull(savedDeal);
         assertNotNull(savedDeal.getId());
         assertTrue(savedDeal.getId() > 0);

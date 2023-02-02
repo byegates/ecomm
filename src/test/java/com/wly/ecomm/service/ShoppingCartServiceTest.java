@@ -1,198 +1,148 @@
 package com.wly.ecomm.service;
 
-import com.wly.ecomm.model.*;
-import com.wly.ecomm.repository.DealRepository;
-import com.wly.ecomm.repository.ProductRepository;
-import com.wly.ecomm.repository.RoleRepository;
-import com.wly.ecomm.repository.UserRepository;
+import com.wly.ecomm.model.CartItem;
+import com.wly.ecomm.model.Product;
+import com.wly.ecomm.model.User;
+import com.wly.ecomm.utils.MathUtils;
+import com.wly.ecomm.utils.TestUtil;
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.annotation.DirtiesContext;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
-import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ComponentScan(basePackages = "com.wly.ecomm.*")
 @AutoConfigureTestDatabase
-@Transactional
 class ShoppingCartServiceTest {
     @Autowired private ShoppingCartService cartService;
-    @Autowired private ProductRepository productRepository;
 
-    @Autowired private RoleRepository roleRepository;
+    @Autowired private TestUtil testUtil;
 
-    @Autowired private UserRepository userRepository;
-    @Autowired private DealRepository dealRepository;
+    private double parseDealCode(String dealCode) {
+        int startIdx = dealCode.startsWith("BOGO") ? 4 : dealCode.startsWith("OFF") ? 3 : -1;
 
-    private Role role;
-    private List<User> users;
-    private List<Product> products;
-    private List<Deal> deals;
-
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-
-    @BeforeEach
-    void setUpData() {
-        role = roleRepository.save(new Role("TESTCART"));
-        setUpUser();
-        setUpDeals();
-        setUpProduct();
+        return startIdx == -1 ? .0 : Double.parseDouble(dealCode.substring(startIdx)) / 100;
     }
 
-    void setUpProduct() {
-        products = List.of(
-                new Product("PIXEL 7 PRO 128GB", 899.00),
-                new Product("PIXEL 7 PRO 256GB", 999.00),
-                new Product("PIXEL 7 PRO 512GB", 1099.00),
-                new Product("PIXEL 7 128GB", 699.00),
-                new Product("PIXEL 7 256GB", 799.00)
-        );
-
-        // two deals added only first one counts
-        products.get(0).addDeals(List.of(deals.get(0), deals.get(1)));
-
-        // two deals added only first one counts
-        products.get(1).addDeals(List.of(deals.get(1), deals.get(2)));
-
-        products.get(2).addDeal(deals.get(2));
-        products.get(3).addDeal(deals.get(3));
-
-        products = productRepository.saveAll(products);
+    private void verifyCalculation(String name) {
+        String[] arr = name.split("_");
+        name = name.substring(0, Math.min(45, name.length()));
+        User user = testUtil.getUser(name);
+        double expectedAmount = .0;
+        for (int i = 1; i+4 < arr.length; i+=4) {
+            String dealCode = arr[i].toUpperCase();
+            double price = Double.parseDouble(arr[i+1]) + Math.random();
+            int quantity = Integer.parseInt(arr[i+2]);
+            Product product = testUtil.getProductWithDeals(name, price, dealCode);
+            cartService.addProduct(product.getId(), quantity, user);
+            expectedAmount += expectedAmount(dealCode, quantity, price);
+        }
+        assertEquals(expectedAmount, cartService.viewReceipt(user).getTotalDue());
     }
 
-    void setUpDeals() {
-        deals = dealRepository.saveAll(Stream.of(
-                new Deal("BOGO50", "BUY ONE GET ONE 50% OFF"),
-                new Deal("BOGO100", "BUY ONE GET ONE 100% OFF"),
-                new Deal("OFF35", "35% OFF FULL PRICE"),
-                new Deal("OFF25", "25% OFF FULL PRICE")
-        ).toList());
+    private double expectedAmount(String dealCode, int quantity, double price) {
+        double off = parseDealCode(dealCode);
+        if (dealCode.startsWith("BOGO")) {
+            int half = quantity/2;
+            return MathUtils.round(price*(half*(1-off)+quantity-half), 2);
+        }
+
+        if (dealCode.startsWith("OFF") || dealCode.equals("NODEAL")) {
+            return MathUtils.round(price * quantity * (1-off), 2);
+        }
+
+        return .0;
     }
 
-    void setUpUser() {
-        users = userRepository.saveAll(Stream.of(
-                new User("tester1@tester_domain.com", "tester1", "tester"),
-//                new User("tester2@tester_domain.com", "tester2", "tester"),
-//                new User("tester3@tester_domain.com", "tester3", "tester"),
-//                new User("tester4@tester_domain.com", "tester4", "tester"),
-                new User("tester0@tester_domain.com", "tester0", "tester")
-        ).peek(user -> user.addRole(role)).toList());
+    @Test @Transactional
+    void receipt_BOGO50_899_2_items() {
+        verifyCalculation(Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    @AfterEach
-    void tearDown() {
+    @Test @Transactional
+    void receipt_BOGO50_749_3_items() {
+        verifyCalculation(Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    @Test
-    @DirtiesContext
-    void viewReceipt_twoDeals_Only_CountOne_BOGO50() {
-        User user = users.get(1);
-        Product product1 = products.get(0); // 899*1.5
-        cartService.addProduct(product1.getId(), 2, user);
-        assertEquals(1348.5, cartService.viewReceipt(user).getTotalDue());
+    @Test @Transactional
+    void receipt_BOGO50_649_5_items() {
+        verifyCalculation(Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    @Test
-    @DirtiesContext
-    void viewReceipt_twoDeals_Only_CountOne_BOGO100() {
-        User user = users.get(0);
-        Product product1 = products.get(1); // 999 2nd 100% off
-        cartService.addProduct(product1.getId(), 2, user);
-        assertEquals(999.0, cartService.viewReceipt(user).getTotalDue());
+    @Test @Transactional
+    void receipt_BOGO50_549_7_items() {
+        verifyCalculation(Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    @Test
-    @DirtiesContext
-    void viewReceipt_BOGO50_3Items() {
-        User user = users.get(0);
-        Product product1 = products.get(0); // 899*2.5
-        cartService.addProduct(product1.getId(), 3, user);
-        assertEquals(2247.5, cartService.viewReceipt(user).getTotalDue());
+    @Test @Transactional
+    void receipt_BOGO100_1099_3_items() {
+        verifyCalculation(Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    @Test
-    @DirtiesContext
-    void viewReceipt_BOGO50_5Items() {
-        User user = users.get(0);
-        Product product1 = products.get(0); // 899*3
-        cartService.addProduct(product1.getId(), 5, user);
-        assertEquals(3596.0, cartService.viewReceipt(user).getTotalDue());
+    @Test @Transactional
+    void receipt_BOGO100_999_5_items() {
+        verifyCalculation(Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    @Test
-    @DirtiesContext
-    void viewReceipt_BOGO100_5Items() {
-        User user = users.get(0);
-        Product product1 = products.get(1); // 999*3
-        cartService.addProduct(product1.getId(), 5, user);
-        assertEquals(2997.0, cartService.viewReceipt(user).getTotalDue());
+    @Test @Transactional
+    void receipt_BOGO100_899_7_items() {
+        verifyCalculation(Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    @Test
-    @DirtiesContext
-    void viewReceipt_BOGO100_9Items() {
-        User user = users.get(0);
-        Product product1 = products.get(1); // 999*5
-        cartService.addProduct(product1.getId(), 9, user);
-        assertEquals(4995.0, cartService.viewReceipt(user).getTotalDue());
+    @Test @Transactional
+    void receipt_BOGO100_799_9_items() {
+        verifyCalculation(Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    @Test
-    @DirtiesContext
-    void viewReceipt_product2_OFF35_9Items_1099() {
-        User user = users.get(0);
-        Product product1 = products.get(2);
-        cartService.addProduct(product1.getId(), 9, user);
-        assertEquals(6429.15, cartService.viewReceipt(user).getTotalDue());
+    @Test @Transactional
+    void receipt_OFF37_1099_9_items() {
+        verifyCalculation(Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    @Test
-    @DirtiesContext
-    void viewReceipt_product3_OFF25_9Items_699() {
-        User user = users.get(0);
-        Product product1 = products.get(3);
-        cartService.addProduct(product1.getId(), 9, user);
-        assertEquals(4718.25, cartService.viewReceipt(user).getTotalDue());
+    @Test @Transactional
+    void receipt_OFF27_699_9_items() {
+        verifyCalculation(Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    @Test
-    @DirtiesContext
-    void viewReceipt_product4_NoDeal_9Items_799() {
-        User user = users.get(0);
-        Product product1 = products.get(4);
-        cartService.addProduct(product1.getId(), 9, user);
-        assertEquals(7191, cartService.viewReceipt(user).getTotalDue());
+    @Test @Transactional
+    void receipt_OFF0_699_9_items() {
+        verifyCalculation(Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    @Test
-    @DirtiesContext
-    void viewReceipt__product2_OFF35_4Items_1099_product0_BOGO50_5Items_899() {
-        User user = users.get(0);
-        cartService.addProduct(products.get(2).getId(), 4, user);
-        cartService.addProduct(products.get(0).getId(), 5, user);
-        assertEquals(6453.4, cartService.viewReceipt(user).getTotalDue());
+    @Test @Transactional
+    void receipt_BOGO0_739_9_items() {
+        verifyCalculation(Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
-    @Test
-    void findByUser() {
-        User user = users.get(1);
-        Product product1 = products.get(0), product2 = products.get(1), product3 = products.get(2);
-        int cartItemQuantity = 5;
+    @Test @Transactional
+    void receipt_NODEAL_799_9_items() {
+        verifyCalculation(Thread.currentThread().getStackTrace()[1].getMethodName());
+    }
 
-        cartService.addProduct(product1.getId(), cartItemQuantity, user);
-        cartService.addProduct(product2.getId(), cartItemQuantity, user);
-        cartService.addProduct(product3.getId(), cartItemQuantity, user);
+    @Test @Transactional
+    void receipt_OFF33_1099_4_items_BOGO50_899_5_items() {
+        verifyCalculation(Thread.currentThread().getStackTrace()[1].getMethodName());
+    }
+
+    @Test @Transactional
+    void receipt_OFF27_379_5_items_BOGO75_482_5_items_BOGO50_731_7_items() {
+        verifyCalculation(Thread.currentThread().getStackTrace()[1].getMethodName());
+    }
+
+    @Test @Transactional
+    void findByUser_3Products1User() {
+        User user = testUtil.getUser(Thread.currentThread().getStackTrace()[1].getMethodName());
+        int cartItemQuantity = 5, numOfProducts = 3;
+        var deal = testUtil.getDealWithProducts(numOfProducts);
+
+        var productList = deal.getProductSet().stream().toList();
+        productList.forEach(product -> cartService.addProduct(product.getId(), cartItemQuantity, user));
 
         List<CartItem> cartItems = cartService.findByUser(user);
         assertEquals(3, cartItems.size());
@@ -201,16 +151,16 @@ class ShoppingCartServiceTest {
             assertEquals(cartItemQuantity, cartItem.getQuantity());
         });
 
-        assertEquals(product1, cartItems.get(0).getProduct());
-        assertEquals(product2, cartItems.get(1).getProduct());
-        assertEquals(product3, cartItems.get(2).getProduct());
+        for (int i = 0; i < numOfProducts; i++) {
+            assertEquals(productList.get(i), cartItems.get(i).getProduct());
+        }
+
     }
 
-    @Test
-    @DirtiesContext
-    void addProduct() {
-        Product product = products.get(0);
-        User user = users.get(0);
+    @Test @Transactional
+    void addProduct_simple_quantity5() {
+        Product product = testUtil.getProductWithDeals(0);
+        User user = testUtil.getUser(Thread.currentThread().getStackTrace()[1].getMethodName());
         int cartItemQuantity = 5;
 
         CartItem cartItem = cartService.addProduct(product.getId(), cartItemQuantity, user);
@@ -221,11 +171,10 @@ class ShoppingCartServiceTest {
         assertEquals(cartItemQuantity, cartItem.getQuantity());
     }
 
-    @Test
-    @DirtiesContext
+    @Test @Transactional
     void updateQuantity() {
-        Product product = products.get(1);
-        User user = users.get(0);
+        Product product = testUtil.getProductWithDeals(0);
+        User user = testUtil.getUser(Thread.currentThread().getStackTrace()[1].getMethodName());
         int cartItemQuantity = 5;
 
         CartItem cartItem = cartService.addProduct(product.getId(), cartItemQuantity, user);
@@ -246,11 +195,10 @@ class ShoppingCartServiceTest {
         assertEquals(cartItemQuantity, cartItemFound.getQuantity());
     }
 
-    @Test
-    @DirtiesContext
+    @Test @Transactional
     void findByUserAndProduct() {
-        Product product = products.get(2);
-        User user = users.get(1);
+        Product product = testUtil.getProductWithDeals(0);
+        User user = testUtil.getUser(Thread.currentThread().getStackTrace()[1].getMethodName());
         int cartItemQuantity = 5;
 
         cartService.addProduct(product.getId(), cartItemQuantity, user);
@@ -264,10 +212,9 @@ class ShoppingCartServiceTest {
     }
 
     @Test
-    @DirtiesContext
     void deleteByUserAndProduct() {
-        Product product = products.get(2);
-        User user = users.get(1);
+        Product product = testUtil.getProductWithDeals(0);
+        User user = testUtil.getUser(Thread.currentThread().getStackTrace()[1].getMethodName());
         int cartItemQuantity = 5;
 
         cartService.addProduct(product.getId(), cartItemQuantity, user);
