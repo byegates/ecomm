@@ -17,15 +17,15 @@ public class Product extends SimpleIdBasedEntity {
     @Column(nullable = false)
     private Double price;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @ToString.Exclude
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "products_deals",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "deal_id")
     )
+    @ToString.Exclude
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private final Set<Deal> deals = new TreeSet<>(Comparator.comparingInt(SimpleIdBasedEntity::getId)); // For demo purpose only
+    private final Set<Deal> deals = new HashSet<>(); // Comparator.comparingInt(SimpleIdBasedEntity::getId)
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, orphanRemoval = true)
     @ToString.Exclude

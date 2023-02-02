@@ -7,6 +7,12 @@ import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceUtils;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Objects;
 
 @SpringBootApplication
 @AllArgsConstructor
@@ -16,6 +22,8 @@ public class EcommApplication {
 	private final UserService userService;
 
 	private final ShoppingCartService shoppingCartService;
+
+	private final JdbcTemplate jdbcTemplate;
 
 	public static void main(String[] args) {
 		SpringApplication.run(EcommApplication.class, args);
@@ -28,9 +36,10 @@ public class EcommApplication {
 	 * deals will be initialized inside initProduct method, check it for details
 	 */
 	@PostConstruct
-	private void initDb() {
-		var products = productService.initProduct();
-		var customers = userService.initUser();
-		shoppingCartService.initCartItem(customers, products);
+	private void initDb() throws SQLException {
+		Connection connection = DataSourceUtils.getConnection(Objects.requireNonNull(jdbcTemplate.getDataSource()));
+		String dbProductName = connection.getMetaData().getDatabaseProductName();
+		if (dbProductName.equals("H2"))
+			shoppingCartService.initCartItem(userService.initUser(), productService.initProduct());
 	}
 }

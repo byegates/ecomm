@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -22,7 +23,7 @@ public class User extends UuidBasedEntity {
     @Column(length = 45, nullable = false)
     private String lastName;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -38,6 +39,9 @@ public class User extends UuidBasedEntity {
 
     public boolean addRole(Role role) {
         return roles.add(role);
+    }
+    public boolean addRoles(Collection<Role> rolesCollection) {
+        return roles.addAll(rolesCollection);
     }
 
     public boolean removeRole(Role role) {

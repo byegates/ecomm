@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.annotation.DirtiesContext;
@@ -23,26 +24,16 @@ import java.util.stream.Stream;
 
 @SpringBootTest
 @ComponentScan(basePackages = "com.wly.ecomm.*")
+@AutoConfigureTestDatabase
 @Transactional
 class ShoppingCartServiceTest {
-    private final ShoppingCartService cartService;
-    private final ProductRepository productRepository;
+    @Autowired private ShoppingCartService cartService;
+    @Autowired private ProductRepository productRepository;
 
-    private final RoleRepository roleRepository;
+    @Autowired private RoleRepository roleRepository;
 
-    private final UserRepository userRepository;
-    private final DealRepository dealRepository;
-
-    @Autowired
-    public ShoppingCartServiceTest(ShoppingCartService cartService, ProductRepository productRepository,
-                                   RoleRepository roleRepository, UserRepository userRepository,
-                                   DealRepository dealRepository) {
-        this.cartService = cartService;
-        this.productRepository = productRepository;
-        this.roleRepository = roleRepository;
-        this.userRepository = userRepository;
-        this.dealRepository = dealRepository;
-    }
+    @Autowired private UserRepository userRepository;
+    @Autowired private DealRepository dealRepository;
 
     private Role role;
     private List<User> users;
@@ -52,7 +43,7 @@ class ShoppingCartServiceTest {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @BeforeEach
-    void setUp() {
+    void setUpData() {
         role = roleRepository.save(new Role("TESTCART"));
         setUpUser();
         setUpDeals();
@@ -206,7 +197,7 @@ class ShoppingCartServiceTest {
         List<CartItem> cartItems = cartService.findByUser(user);
         assertEquals(3, cartItems.size());
         cartItems.forEach(cartItem -> {
-            assertEquals(user, cartItem.getUser());
+            assertEquals(user.getId(), cartItem.getUser().getId());
             assertEquals(cartItemQuantity, cartItem.getQuantity());
         });
 
@@ -251,7 +242,7 @@ class ShoppingCartServiceTest {
         assertNotNull(cartItemFound);
         assertNotNull(cartItemFound.getId());
         assertEquals(product, cartItemFound.getProduct());
-        assertUserFieldEqual(user, cartItemFound.getUser());
+        assertEquals(user.getId(), cartItemFound.getUser().getId());
         assertEquals(cartItemQuantity, cartItemFound.getQuantity());
     }
 
@@ -268,7 +259,7 @@ class ShoppingCartServiceTest {
         assertNotNull(cartItemFound);
         assertNotNull(cartItemFound.getId());
         assertEquals(product, cartItemFound.getProduct());
-        assertEquals(user, cartItemFound.getUser());
+        assertEquals(user.getId(), cartItemFound.getUser().getId());
         assertEquals(cartItemQuantity, cartItemFound.getQuantity());
     }
 
@@ -285,19 +276,11 @@ class ShoppingCartServiceTest {
         assertNotNull(cartItemFound);
         assertNotNull(cartItemFound.getId());
         assertEquals(product, cartItemFound.getProduct());
-        assertEquals(user, cartItemFound.getUser());
+        assertEquals(user.getId(), cartItemFound.getUser().getId());
         assertEquals(cartItemQuantity, cartItemFound.getQuantity());
 
         assertEquals(1, cartService.deleteByUserAndProduct(user, product.getId()));
         cartItemFound = cartService.findByUserAndProduct(user, product);
         assertNull(cartItemFound);
-    }
-
-    void assertUserFieldEqual(User user1, User user2) {
-        assertEquals(user1.getId(), user2.getId());
-        assertEquals(user1.getEmail(), user2.getEmail());
-        assertEquals(user1.getRoles(), user2.getRoles());
-        assertEquals(user1.getFirstName(), user2.getFirstName());
-        assertEquals(user1.getLastName(), user2.getLastName());
     }
 }

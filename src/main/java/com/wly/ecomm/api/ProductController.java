@@ -19,6 +19,9 @@ public class ProductController {
         return service.findAll();
     }
 
+    /*
+    * ignoring deals added with products for now as deals validation is not done yet and the formatting is vulnerable
+     */
     @PostMapping(consumes = "application/json")
     public Product create(@Valid @RequestBody Product product) {
         product.clearDeal();

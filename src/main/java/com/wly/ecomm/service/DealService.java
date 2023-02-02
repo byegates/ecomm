@@ -42,12 +42,4 @@ public class DealService {
         return repository.saveAll(dealList);
     }
 
-    public List<Deal> initDeal() {
-        return repository.saveAll(List.of(
-                new Deal("BOGO50", "BUY ONE GET ONE 50% OFF"),
-                new Deal("BOGO100", "BUY ONE GET ONE FREE"),
-                new Deal("OFF35", "35% OFF"),
-                new Deal("OFF20", "20% OFF")
-        ));
-    }
 }

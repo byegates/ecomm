@@ -21,14 +21,14 @@ public class Deal extends SimpleIdBasedEntity {
     @Column(nullable = false)
     private String description;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @ToString.Exclude
-    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "products_deals",
             joinColumns = @JoinColumn(name = "deal_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )
+    @ToString.Exclude
+    @JsonIgnore
     @OnDelete(action = OnDeleteAction.CASCADE)
     private final Set<Product> productSet = new HashSet<>();
 
