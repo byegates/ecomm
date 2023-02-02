@@ -20,6 +20,8 @@ public class ShoppingCartService {
     private final CartItemRepository repository;
     private final ProductService productService;
 
+    private final UserService userService;
+
     public List<CartItem> findByUser(User user) {
         return repository.findByUser(user);
     }
@@ -27,8 +29,9 @@ public class ShoppingCartService {
     public CartItem findByUserAndProduct(User user, Product product) {return repository.findByUserAndProduct(user, product);}
 
     @Transactional
-    public CartItem addProduct(Integer productId, Integer quantity, User user) {
+    public CartItem addProduct(UUID userId, Integer productId, Integer quantity) {
         Product product = productService.findById(productId);
+        var user = userService.findById(userId);
         CartItem cartItem = repository.findByUserAndProduct(user, product);
 
         int updatedQuantity = quantity;
@@ -45,13 +48,13 @@ public class ShoppingCartService {
     }
 
     @Transactional
-    public void updateQuantity(Integer productId, Integer quantity, UUID userId) {
+    public void updateQuantity(UUID userId, Integer productId, Integer quantity) {
         repository.updateQuantity(quantity, productId, userId);
     }
 
     @Transactional
-    public int deleteByUserAndProduct(User user, Integer productId) {
-        return repository.deleteByUserAndProduct(user, productService.findById(productId));
+    public int deleteByUserAndProduct(UUID userId, Integer productId) {
+        return repository.deleteByUserAndProduct(userService.findById(userId), productService.findById(productId));
     }
 
     public ReceiptDto viewReceipt(User user) {
@@ -113,20 +116,25 @@ public class ShoppingCartService {
         var product7_NODEAL = products.get(6);
         var product8_NODEAL = products.get(7);
 
-        addProduct(product1_BOGO50.getId(), 2, customers.get(0));
-        addProduct(product3_OFF35.getId(), 1, customers.get(0));
+        UUID userId0 = customers.get(0).getId();
+        addProduct(userId0, product1_BOGO50.getId(), 2);
+        addProduct(userId0, product3_OFF35.getId(), 1);
 
-        addProduct(product2_BOGO50.getId(), 3, customers.get(1));
-        addProduct(product4_OFF35.getId(), 2, customers.get(1));
+        UUID userId1 = customers.get(1).getId();
+        addProduct(userId1, product2_BOGO50.getId(), 3);
+        addProduct(userId1, product4_OFF35.getId(), 2);
 
-        addProduct(product5_BOGO100.getId(), 4, customers.get(2));
-        addProduct(product6_OFF20.getId(), 1, customers.get(2));
+        UUID userId2 = customers.get(2).getId();
+        addProduct(userId2, product5_BOGO100.getId(), 4);
+        addProduct(userId2, product6_OFF20.getId(), 1);
 
-        addProduct(product5_BOGO100.getId(), 5, customers.get(3));
-        addProduct(product6_OFF20.getId(), 3, customers.get(3));
-        addProduct(product7_NODEAL.getId(), 2, customers.get(3));
+        UUID userId3 = customers.get(3).getId();
+        addProduct(userId3, product5_BOGO100.getId(), 5);
+        addProduct(userId3, product6_OFF20.getId(), 3);
+        addProduct(userId3, product7_NODEAL.getId(), 2);
 
-        addProduct(product7_NODEAL.getId(), 1, customers.get(4));
-        addProduct(product8_NODEAL.getId(), 2, customers.get(4));
+        UUID userId4 = customers.get(4).getId();
+        addProduct(userId4, product7_NODEAL.getId(), 1);
+        addProduct(userId4, product8_NODEAL.getId(), 2);
     }
 }
