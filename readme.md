@@ -8,15 +8,14 @@ certain behavior maybe slightly different from video, and end points are more th
 Key behaviors and endpoints should be the same.
 </pre>
 
-## See the App working on AWS directly
+## [SEE THE APP WORKING ON AWS DIRECTLY](http://ecomm.us-east-1.elasticbeanstalk.com/products)
 This is just another optional way to play with this app
 - All data are persisted in aws RDS(mysql), so data you edit is going to be permanent.
-- [Root Endpoint](http://ecomm.us-east-1.elasticbeanstalk.com/)
-  - Nothing here actually
-- [One user's shopping cart](http://ecomm.us-east-1.elasticbeanstalk.com/users/25ea3aea-b62f-4641-a0a8-29ccfd490150/cart)
+- [Now you can see user info with receipt](http://ecomm.us-east-1.elasticbeanstalk.com/users/25ea3aea-b62f-4641-a0a8-29ccfd490150)
+- [Same user's shopping cart](http://ecomm.us-east-1.elasticbeanstalk.com/users/25ea3aea-b62f-4641-a0a8-29ccfd490150/cart)
   - [Same user's receipt of current shopping cart](http://ecomm.us-east-1.elasticbeanstalk.com/users/25ea3aea-b62f-4641-a0a8-29ccfd490150/receipt)
   - Please do not delete this user ID :)
-- [Current products with its associated deals](http://ecomm.us-east-1.elasticbeanstalk.com/products)
+- [List Of Users](http://ecomm.us-east-1.elasticbeanstalk.com/users)
 - [swagger of aws app](http://ecomm.us-east-1.elasticbeanstalk.com/swagger-ui/index.html#/)
 
 ## To run the app locally:
