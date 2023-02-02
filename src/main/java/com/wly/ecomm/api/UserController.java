@@ -2,6 +2,7 @@ package com.wly.ecomm.api;
 
 
 import com.wly.ecomm.dto.ReceiptDto;
+import com.wly.ecomm.dto.UserDTO;
 import com.wly.ecomm.model.CartItem;
 import com.wly.ecomm.model.User;
 import com.wly.ecomm.service.ShoppingCartService;
@@ -30,8 +31,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User findById(@PathVariable UUID id) {
-        return service.findById(id);
+    public UserDTO findById(@PathVariable UUID id) {
+        return shoppingCartService.findUserDtoById(id);
     }
 
     @DeleteMapping("/{id}")

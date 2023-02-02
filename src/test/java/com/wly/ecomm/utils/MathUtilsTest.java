@@ -88,5 +88,22 @@ class MathUtilsTest {
         assertTrue(Math.abs(MathUtils.round(x, -7) - 12000000) < epsilon);
     }
 
+    @Test
+    void getPrice() {
+        for (int i = 0; i < 100_000; i++) {
+            double price = MathUtils.getPrice();
+            assertTrue(price >= 200);
+            assertTrue(price < 1201);
+        }
+    }
+
+    @Test
+    void getOffPercentage() {
+        for (int i = 0; i < 100_1000; i++) {
+            double price = MathUtils.getOffPercentage();
+            assertTrue(price >= 0);
+            assertTrue(price <= 100.0);
+        }
+    }
 }
 
