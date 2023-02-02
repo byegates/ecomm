@@ -1,6 +1,7 @@
 package com.wly.ecomm.service;
 
 import com.wly.ecomm.exception.UserDefinedException;
+import com.wly.ecomm.model.Role;
 import com.wly.ecomm.model.User;
 import com.wly.ecomm.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -15,7 +16,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UserService {
     private final UserRepository repository;
-
     private final RoleService roleService;
 
     public List<User> findAll() {
@@ -24,6 +24,8 @@ public class UserService {
 
     @Transactional
     public User save(User user) {
+        var rolesSet = user.getRoles();
+        rolesSet.addAll(rolesSet.stream().map(roleService::merge).toList());
         return repository.save(user);
     }
 
@@ -35,12 +37,18 @@ public class UserService {
         return maybeUser.get();
     }
 
+    @Transactional
+    public void deleteById(UUID id) {
+        repository.deleteById(id);
+    }
     /**
      * Initialize our h2 testing database with some starting admin and customer users for demo purpose
      * @return List of User (customers actually), for ShoppingCart service use to add some cart items for demo purpose
      */
+@Transactional
     public List<User> initUser() {
-        var roles = roleService.initRole();
+    Role adminRole = new Role("ADMIN");
+    Role customerRole = new Role("CUSTOMER");
 
         // add 4 customers
         var customers = List.of(
@@ -51,7 +59,7 @@ public class UserService {
                 new User("customer0@customer_domain.com", "Customer0", "Customer")
         );
 
-        customers.forEach(user -> user.addRole(roles.get(1)));
+        customers.forEach(user -> user.addRole(customerRole));
         repository.saveAll(customers);
 
         // add 2 admin users
@@ -60,9 +68,10 @@ public class UserService {
                 new User("admin@domain.com", "admin", "admin")
         );
 
-        admins.forEach(user -> user.addRole(roles.get(0)));
+        admins.forEach(user -> user.addRole(adminRole));
         repository.saveAll(admins);
 
         return customers;
     }
+
 }

@@ -2,6 +2,11 @@
 
 ## [VIDEO DEMO](https://youtu.be/KTrA1xwZHoU)
 Video demo of important end points
+<pre>
+NOTE: jar file and code has since been updated after video upload,
+certain behavior maybe slightly different from video, and end points are more than what's in video
+Key behaviors and endpoints should be the same.
+</pre>
 
 ## To run the app:
 ### download jar

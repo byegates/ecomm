@@ -3,26 +3,35 @@ package com.wly.ecomm.service;
 import com.wly.ecomm.exception.UserDefinedException;
 import com.wly.ecomm.model.Deal;
 import com.wly.ecomm.utils.TestUtil;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@AutoConfigureTestDatabase
 class DealServiceTest {
-    private final DealService dealService;
-    private final TestUtil testUtil;
 
+    @Autowired private DealService dealService;
+    @Autowired private TestUtil testUtil;
 
-    @Autowired
-    public DealServiceTest(DealService dealService, TestUtil testUtil) {
-        this.dealService = dealService;
-        this.testUtil = testUtil;
+    @Autowired private EntityManager em;
+
+    @BeforeEach
+    void setUp() {
+    }
+
+    @AfterEach
+    void cleanUp() {
     }
 
     // To-DO add exception handling for all services for deleteById not found
@@ -32,7 +41,7 @@ class DealServiceTest {
     }
 
     @Test
-    @DirtiesContext
+    @Transactional
     void deleteById() {
         Deal deal1 = dealService.save(new Deal("45OFF", "45% OFF FULL PRICE"));
         Deal deal2 = dealService.save(new Deal("BOGO50", "BUY ONE GET SECOND ONE 50% OFF"));
@@ -55,10 +64,10 @@ class DealServiceTest {
     }
 
     @Test
-    @DirtiesContext
+    @Transactional
     void deleteById_1deal_with_2products() {
         int numberOfProducts = 2;
-        Deal deal = prepareDealWithProducts(numberOfProducts);
+        Deal deal = testUtil.prepareDealWithProducts(numberOfProducts);
         assertNotNull(deal.getId());
         assertEquals(numberOfProducts, deal.getProductSet().size());
         dealService.deleteById(deal.getId());
@@ -66,10 +75,10 @@ class DealServiceTest {
     }
 
     @Test
-    @DirtiesContext
+    @Transactional
     void deleteById_1deal_with_20products() {
         int numberOfProducts = 20;
-        Deal deal = prepareDealWithProducts(numberOfProducts);
+        Deal deal = testUtil.prepareDealWithProducts(numberOfProducts);
         assertNotNull(deal.getId());
         assertEquals(numberOfProducts, deal.getProductSet().size());
         dealService.deleteById(deal.getId());
@@ -77,10 +86,10 @@ class DealServiceTest {
     }
 
     @Test
-    @DirtiesContext
+    @Transactional
     void deleteById_1deal_with_5products() {
         int numberOfProducts = 5;
-        Deal deal = prepareDealWithProducts(numberOfProducts);
+        Deal deal = testUtil.prepareDealWithProducts(numberOfProducts);
         assertNotNull(deal.getId());
         assertEquals(numberOfProducts, deal.getProductSet().size());
         dealService.deleteById(deal.getId());
@@ -88,11 +97,13 @@ class DealServiceTest {
     }
 
     @Test
+    @Transactional
     void findById_ExceptionOnNotFound() {
         assertThrows(UserDefinedException.class, () -> dealService.findById(Integer.MAX_VALUE));
     }
 
     @Test
+    @Transactional
     void findById() {
         Deal deal1 = dealService.save(new Deal("45OFF", "45% OFF FULL PRICE"));
         Deal deal2 = dealService.save(new Deal("BOGO50", "BUY ONE GET SECOND ONE 50% OFF"));
@@ -109,7 +120,7 @@ class DealServiceTest {
     }
 
     @Test
-    @DirtiesContext
+    @Transactional
     void save_2_deals_1by1() {
         Deal deal1 = new Deal("45OFF", "45% OFF FULL PRICE");
         Deal deal2 = new Deal("BOGO50", "BUY ONE GET SECOND ONE 50% OFF");
@@ -120,17 +131,40 @@ class DealServiceTest {
     }
 
     @Test
-    @DirtiesContext
+    @Transactional
     void saveAll_5Deal() {
         int numOfDeals = 5;
         List<Deal> dealList = testUtil.prepareDeals(numOfDeals);
         assertEquals(numOfDeals, dealList.size());
     }
 
-    private Deal prepareDealWithProducts(int numberOfProducts) {
-        Deal deal = new Deal("OFF37", "TEST - 37% OFF ORIGINAL PRICE");
-        deal.addProducts(testUtil.prepareProducts(numberOfProducts));
-        return dealService.save(deal);
+    /*
+     * relationships are inserted after method completion by default, therefore em.flush() is used to accelerate the process
+     * Besides, testUtil.getDealCount, testUtil.getProductCount and testUtil.getProductDealCountByDeal
+     * uses jdbcTemplate with native sql to get accurate count
+     */
+    @Test
+    @Transactional
+    void OnDeleteCascade_delete_deal_with2Products_also_delete_relationship() {
+        int numOfProducts = 2;
+        var deal = testUtil.prepareDealWithProducts(numOfProducts);
+        em.flush();
+        assertEquals(numOfProducts, testUtil.getProductDealCountByDeal(deal));
+        dealService.deleteById(deal.getId());
+        em.flush();
+        assertEquals(0, testUtil.getProductDealCountByDeal(deal));
+    }
+
+    @Test
+    @Transactional
+    void OnDeleteCascade_delete_deal_with20Products_also_delete_relationship() {
+        int numOfProducts = 20;
+        var deal = testUtil.prepareDealWithProducts(numOfProducts);
+        em.flush();
+        assertEquals(numOfProducts, testUtil.getProductDealCountByDeal(deal));
+        dealService.deleteById(deal.getId());
+        em.flush();
+        assertEquals(0, testUtil.getProductDealCountByDeal(deal));
     }
 
     private void assertEqualsWithoutId(Deal deal, Deal savedDeal) {

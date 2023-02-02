@@ -4,11 +4,13 @@ import com.wly.ecomm.exception.UserDefinedException;
 import com.wly.ecomm.model.Deal;
 import com.wly.ecomm.model.Product;
 import com.wly.ecomm.utils.TestUtil;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 
@@ -16,22 +18,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ComponentScan(basePackages = "com.wly.ecomm.*")
+@AutoConfigureTestDatabase
 class ProductServiceTest {
 
-    private final ProductService productService;
-    private final DealService dealService;
+    @Autowired private ProductService productService;
+    @Autowired private TestUtil testUtil;
 
-    private final TestUtil testUtil;
-
-    @Autowired
-    public ProductServiceTest(ProductService productService, DealService dealService, TestUtil testUtil) {
-        this.productService = productService;
-        this.dealService = dealService;
-        this.testUtil = testUtil;
-    }
+    @Autowired private EntityManager em;
 
     @Test
-    @DirtiesContext
+    @Transactional
     void deleteById_delete1_normal_product() {
         Product product = productService.save(new Product("PIXEL 7 PRO 128GB", 899.00));
         assertNotNull(productService.findById(product.getId()));
@@ -40,10 +36,10 @@ class ProductServiceTest {
     }
 
     @Test
-    @DirtiesContext
+    @Transactional
     void deleteById_delete1_product_with_2deals() {
         int numberOfDeals = 2;
-        Product product = prepare_1_product_with_deals(numberOfDeals);
+        Product product = testUtil.prepareProductWithDeals(numberOfDeals);
         assertNotNull(product.getId());
         assertEquals(numberOfDeals, product.getDeals().size());
         productService.deleteById(product.getId());
@@ -51,10 +47,10 @@ class ProductServiceTest {
     }
 
     @Test
-    @DirtiesContext
+    @Transactional
     void deleteById_delete1_product_with_10deals() {
         int numberOfDeals = 10;
-        Product product = prepare_1_product_with_deals(numberOfDeals);
+        Product product = testUtil.prepareProductWithDeals(numberOfDeals);
         assertNotNull(product.getId());
         assertEquals(numberOfDeals, product.getDeals().size());
         productService.deleteById(product.getId());
@@ -62,10 +58,10 @@ class ProductServiceTest {
     }
 
     @Test
-    @DirtiesContext
+    @Transactional
     void deleteById_delete1_product_with_5deals() {
         int numberOfDeals = 5;
-        Product product = prepare_1_product_with_deals(numberOfDeals);
+        Product product = testUtil.prepareProductWithDeals(numberOfDeals);
         assertNotNull(product.getId());
         assertEquals(numberOfDeals, product.getDeals().size());
         productService.deleteById(product.getId());
@@ -73,10 +69,10 @@ class ProductServiceTest {
     }
 
     @Test
-    @DirtiesContext
+    @Transactional
     void deleteById_delete1_product_with_20deals() {
         int numberOfDeals = 20;
-        Product product = prepare_1_product_with_deals(numberOfDeals);
+        Product product = testUtil.prepareProductWithDeals(numberOfDeals);
         assertNotNull(product.getId());
         assertEquals(numberOfDeals, product.getDeals().size());
         productService.deleteById(product.getId());
@@ -97,7 +93,7 @@ class ProductServiceTest {
     }
 
     @Test
-    @DirtiesContext
+    @Transactional
     void save_1product() {
         Product product = new Product("PIXEL 7 PRO 128GB", 899.00);
         Product savedProduct = productService.save(product);
@@ -110,7 +106,7 @@ class ProductServiceTest {
     }
 
     @Test
-    @DirtiesContext
+    @Transactional
     void saveAll_5Products() {
         int numOfProducts = 5;
         List<Product> productList = testUtil.prepareProducts(numOfProducts);
@@ -118,10 +114,10 @@ class ProductServiceTest {
     }
 
     @Test
-    @DirtiesContext
+    @Transactional
     void updateDeals() {
-        Deal deal1 = dealService.save(new Deal("45OFF", "45% OFF FULL PRICE"));
-        Deal deal2 = dealService.save(new Deal("BOGO50", "BUY ONE GET SECOND ONE 50% OFF"));
+        Deal deal1 = testUtil.prepareDealWithProducts(0);
+        Deal deal2 = testUtil.prepareDealWithProducts(0);
         Product product = productService.save(new Product("PIXEL 7 PRO 128GB", 899.00));
         product = productService.updateDeals(product.getId(), "add", deal1.getId());
         assertEquals(1, product.getDeals().size());
@@ -134,19 +130,19 @@ class ProductServiceTest {
     }
 
     @Test
-    @DirtiesContext
+    @Transactional
     void updateDeals_ThrowExceptionOnInvalidActionCode() {
-        Deal deal1 = dealService.save(new Deal("45OFF", "45% OFF FULL PRICE"));
+        Deal deal = testUtil.prepareDealWithProducts(1);
         Product product = productService.save(new Product("PIXEL 7 PRO 128GB", 899.00));
-        product = productService.updateDeals(product.getId(), "add", deal1.getId());
+        product = productService.updateDeals(product.getId(), "add", deal.getId());
         assertEquals(1, product.getDeals().size());
 
         int productId = product.getId();
-        assertThrows(UserDefinedException.class, () -> productService.updateDeals(productId, "update", deal1.getId()));
+        assertThrows(UserDefinedException.class, () -> productService.updateDeals(productId, "update", deal.getId()));
     }
 
     @Test
-    @DirtiesContext
+    @Transactional
     void updateDeals_ThrowExceptionOnInvalidDealId() {
         Product product = productService.save(new Product("PIXEL 7 PRO 128GB", 899.00));
         int productId = product.getId();
@@ -154,16 +150,39 @@ class ProductServiceTest {
     }
 
     @Test
-    @DirtiesContext
+    @Transactional
     void updateDeals_ThrowExceptionOnInvalidProductId() {
-        Deal deal1 = dealService.save(new Deal("45OFF", "45% OFF FULL PRICE"));
-        assertThrows(UserDefinedException.class, () -> productService.updateDeals(Integer.MAX_VALUE, "update", deal1.getId()));
+        Deal deal = testUtil.prepareDealWithProducts(0);
+        assertThrows(UserDefinedException.class, () -> productService.updateDeals(Integer.MAX_VALUE, "update", deal.getId()));
     }
 
-    Product prepare_1_product_with_deals(int numberOfDeals) {
-        Product product = productService.save(new Product("TEST-PIXEL 7 PRO 128GB", 899.00));
-
-        product.addDeals(dealService.saveAll(testUtil.prepareDeals(numberOfDeals)));
-        return productService.save(product);
+    /*
+     * relationships are inserted after method completion by default, therefore em.flush() is used to accelerate the process
+     * Besides, testUtil.getDealCount, testUtil.getProductCount and testUtil.getProductDealCountByDeal
+     * uses jdbcTemplate with native sql to get accurate count
+     */
+    @Test
+    @Transactional
+    void OnDeleteCascade_delete_product_with2Deals_also_delete_relationship() {
+        int numOfDeals = 2;
+        var product = testUtil.prepareProductWithDeals(numOfDeals);
+        em.flush();
+        assertEquals(numOfDeals, testUtil.getProductDealCountByProduct(product));
+        productService.deleteById(product.getId());
+        em.flush();
+        assertEquals(0, testUtil.getProductDealCountByProduct(product));
     }
+
+    @Test
+    @Transactional
+    void OnDeleteCascade_delete_product_with20Deals_also_delete_relationship() {
+        int numOfDeals = 20;
+        var product = testUtil.prepareProductWithDeals(numOfDeals);
+        em.flush();
+        assertEquals(numOfDeals, testUtil.getProductDealCountByProduct(product));
+        productService.deleteById(product.getId());
+        em.flush();
+        assertEquals(0, testUtil.getProductDealCountByProduct(product));
+    }
+
 }

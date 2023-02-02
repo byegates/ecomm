@@ -24,9 +24,19 @@ public class UserController {
         return service.findAll();
     }
 
+    @PostMapping
+    public User create(@RequestBody User user) {
+        return service.save(user);
+    }
+
     @GetMapping("/{id}")
     public User findById(@PathVariable UUID id) {
         return service.findById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable UUID id) {
+        service.deleteById(id);
     }
 
     @GetMapping("/{id}/cart")

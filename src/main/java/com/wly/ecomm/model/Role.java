@@ -1,17 +1,32 @@
 package com.wly.ecomm.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor @AllArgsConstructor @ToString @Getter @Setter
 public class Role extends SimpleIdBasedEntity {
     @Column(length = 40, nullable = false, unique = true)
     private String name;
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "roles")
+    @ToString.Exclude
+    @JsonIgnore
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private final Set<User> userSet = new HashSet<>();
+
+    @PrePersist
+    private void setNameUpperCase() {
+        name = name.toUpperCase();
+    }
 
     @Override
     public boolean equals(Object o) {
