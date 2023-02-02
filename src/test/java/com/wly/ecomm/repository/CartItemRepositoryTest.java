@@ -60,7 +60,7 @@ class CartItemRepositoryTest {
                 new Product("PIXEL 7 PRO 128GB", 899.00),
                 new Product("PIXEL 7 PRO 256GB", 999.00)
         ));
-        products.forEach(product -> shoppingCartService.addProduct(product.getId(), INIT_QUANTITY, user));
+        products.forEach(product -> shoppingCartService.addProduct(user.getId(), product.getId(), INIT_QUANTITY));
     }
 
     @Test

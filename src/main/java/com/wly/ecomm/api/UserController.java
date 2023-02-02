@@ -49,22 +49,20 @@ public class UserController {
                                    @PathVariable Integer productId,
                                    @PathVariable Integer quantity) {
 
-        User user = service.findById(userId);
-        return shoppingCartService.addProduct(productId, quantity, user);
+        return shoppingCartService.addProduct(userId, productId, quantity);
     }
 
     @PostMapping("/{userId}/cart/update/{productId}/{quantity}")
     public void updateQuantity(@PathVariable UUID userId,
                                      @PathVariable Integer productId,
                                      @PathVariable Integer quantity) {
-        shoppingCartService.updateQuantity(productId, quantity, userId);
+        shoppingCartService.updateQuantity(userId, productId, quantity);
     }
 
     @DeleteMapping("/{userId}/cart/remove/{productId}")
     public void updateQuantity(@PathVariable UUID userId, @PathVariable Integer productId) {
 
-        User user = service.findById(userId);
-        shoppingCartService.deleteByUserAndProduct(user, productId);
+        shoppingCartService.deleteByUserAndProduct(userId, productId);
     }
 
     @GetMapping("/{id}/receipt")

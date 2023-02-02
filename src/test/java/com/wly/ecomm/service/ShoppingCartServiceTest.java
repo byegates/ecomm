@@ -40,7 +40,7 @@ class ShoppingCartServiceTest {
             double price = Double.parseDouble(arr[i+1]) + Math.random();
             int quantity = Integer.parseInt(arr[i+2]);
             Product product = testUtil.getProductWithDeals(name, price, dealCode);
-            cartService.addProduct(product.getId(), quantity, user);
+            cartService.addProduct(user.getId(), product.getId(), quantity);
             expectedAmount += expectedAmount(dealCode, quantity, price);
         }
         assertEquals(expectedAmount, cartService.viewReceipt(user).getTotalDue());
@@ -142,7 +142,7 @@ class ShoppingCartServiceTest {
         var deal = testUtil.getDealWithProducts(numOfProducts);
 
         var productList = deal.getProducts().stream().toList();
-        productList.forEach(product -> cartService.addProduct(product.getId(), cartItemQuantity, user));
+        productList.forEach(product -> cartService.addProduct(user.getId(), product.getId(), cartItemQuantity));
 
         List<CartItem> cartItems = cartService.findByUser(user);
         assertEquals(3, cartItems.size());
@@ -163,7 +163,7 @@ class ShoppingCartServiceTest {
         User user = testUtil.getUser(Thread.currentThread().getStackTrace()[1].getMethodName());
         int cartItemQuantity = 5;
 
-        CartItem cartItem = cartService.addProduct(product.getId(), cartItemQuantity, user);
+        CartItem cartItem = cartService.addProduct(user.getId(), product.getId(), cartItemQuantity);
         assertNotNull(cartItem);
         assertNotNull(cartItem.getId());
         assertEquals(product, cartItem.getProduct());
@@ -177,7 +177,7 @@ class ShoppingCartServiceTest {
         User user = testUtil.getUser(Thread.currentThread().getStackTrace()[1].getMethodName());
         int cartItemQuantity = 5;
 
-        CartItem cartItem = cartService.addProduct(product.getId(), cartItemQuantity, user);
+        CartItem cartItem = cartService.addProduct(user.getId(), product.getId(), cartItemQuantity);
         assertNotNull(cartItem);
         assertNotNull(cartItem.getId());
         assertEquals(product, cartItem.getProduct());
@@ -185,7 +185,7 @@ class ShoppingCartServiceTest {
         assertEquals(cartItemQuantity, cartItem.getQuantity());
 
         cartItemQuantity = 10;
-        cartService.updateQuantity(product.getId(), cartItemQuantity, user.getId());
+        cartService.updateQuantity(user.getId(), product.getId(), cartItemQuantity);
         CartItem cartItemFound = cartService.findByUserAndProduct(user, product);
 
         assertNotNull(cartItemFound);
@@ -201,7 +201,7 @@ class ShoppingCartServiceTest {
         User user = testUtil.getUser(Thread.currentThread().getStackTrace()[1].getMethodName());
         int cartItemQuantity = 5;
 
-        cartService.addProduct(product.getId(), cartItemQuantity, user);
+        cartService.addProduct(user.getId(), product.getId(), cartItemQuantity);
         CartItem cartItemFound = cartService.findByUserAndProduct(user, product);
 
         assertNotNull(cartItemFound);
@@ -217,7 +217,7 @@ class ShoppingCartServiceTest {
         User user = testUtil.getUser(Thread.currentThread().getStackTrace()[1].getMethodName());
         int cartItemQuantity = 5;
 
-        cartService.addProduct(product.getId(), cartItemQuantity, user);
+        cartService.addProduct(user.getId(), product.getId(), cartItemQuantity);
         CartItem cartItemFound = cartService.findByUserAndProduct(user, product);
 
         assertNotNull(cartItemFound);
@@ -226,7 +226,7 @@ class ShoppingCartServiceTest {
         assertEquals(user.getId(), cartItemFound.getUser().getId());
         assertEquals(cartItemQuantity, cartItemFound.getQuantity());
 
-        assertEquals(1, cartService.deleteByUserAndProduct(user, product.getId()));
+        assertEquals(1, cartService.deleteByUserAndProduct(user.getId(), product.getId()));
         cartItemFound = cartService.findByUserAndProduct(user, product);
         assertNull(cartItemFound);
     }
