@@ -1,9 +1,11 @@
-package com.wly.ecomm.service;
+package com.wly.ecomm.service.Mockito;
 
 import com.wly.ecomm.exception.UserDefinedException;
 import com.wly.ecomm.model.Deal;
 import com.wly.ecomm.model.Product;
 import com.wly.ecomm.repository.ProductRepository;
+import com.wly.ecomm.service.DealService;
+import com.wly.ecomm.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +25,7 @@ import static org.mockito.Mockito.mock;
  * Dependencies Mocked: ProductRepository, DealService
  */
 
-class ProductServiceWithMockitoTest {
+class ProductServiceTest {
     private ProductRepository repository;
     private DealService dealService;
 
