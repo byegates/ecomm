@@ -7,9 +7,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
+import lombok.Setter;
 
 @MappedSuperclass
-@Getter
+@Getter @Setter
 public abstract class SimpleIdBasedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
