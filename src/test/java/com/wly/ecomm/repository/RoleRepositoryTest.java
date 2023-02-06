@@ -1,7 +1,6 @@
 package com.wly.ecomm.repository;
 
 import com.wly.ecomm.model.Role;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest // enables h2 database directly
 @ComponentScan(basePackages = "com.wly.ecomm.*")
-@Transactional
 class RoleRepositoryTest {
     private final RoleRepository roleRepository;
 

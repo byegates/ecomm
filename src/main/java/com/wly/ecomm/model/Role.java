@@ -2,6 +2,8 @@ package com.wly.ecomm.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.OnDelete;
@@ -14,7 +16,9 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor @AllArgsConstructor @ToString @Getter @Setter
 public class Role extends SimpleIdBasedEntity {
-    @Column(length = 40, nullable = false, unique = true)
+    @Size(max = 20, message = "Role Name must not exceed 20 characters")
+    @NotEmpty(message = "Role Name field can't be empty")
+    @Column(length = 20, nullable = false, unique = true)
     private String name;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "roles")
