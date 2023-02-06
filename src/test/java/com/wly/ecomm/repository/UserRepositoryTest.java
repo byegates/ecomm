@@ -3,11 +3,11 @@ package com.wly.ecomm.repository;
 import com.wly.ecomm.model.Role;
 import com.wly.ecomm.model.User;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.UUID;
 
@@ -17,14 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @ComponentScan(basePackages = "com.wly.ecomm.*")
 class UserRepositoryTest {
 
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-
-    @Autowired
-    public UserRepositoryTest(UserRepository userRepository, RoleRepository roleRepository) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-    }
+    @Autowired private UserRepository userRepository;
+    @Autowired private RoleRepository roleRepository;
 
     @Test
     @Disabled
@@ -36,8 +30,7 @@ class UserRepositoryTest {
         return roleRepository.save(new Role("TEST"));
     }
 
-    @Test
-    @DirtiesContext
+    @Test @DisplayName("Save a user")
     public void givenUserObject_whenSave_thenSavedUserEqualsOriginalUser() {
         User user = new User("TestCase@junit.org", "Test", "Case");
         user.addRole(createRole());
@@ -47,9 +40,7 @@ class UserRepositoryTest {
         assertNotNull(savedUser.getId());
         assertInstanceOf(UUID.class, savedUser.getId());
 
-        assertEquals(user.getEmail(), savedUser.getEmail());
-        assertEquals(user.getFirstName(), savedUser.getFirstName());
-        assertEquals(user.getLastName(), savedUser.getLastName());
+        assertEquals(user, savedUser);
         assertEquals(user.getRoles(), savedUser.getRoles());
     }
 }

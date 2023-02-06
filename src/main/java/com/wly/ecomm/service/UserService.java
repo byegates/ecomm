@@ -16,7 +16,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UserService {
     private final UserRepository repository;
-    private final RoleService roleService;
 
     public List<User> findAll() {
         return repository.findAll();
@@ -24,8 +23,6 @@ public class UserService {
 
     @Transactional
     public User save(User user) {
-        var rolesSet = user.getRoles();
-        rolesSet.addAll(rolesSet.stream().map(roleService::merge).toList());
         return repository.save(user);
     }
 
@@ -52,11 +49,11 @@ public class UserService {
 
         // add 4 customers
         var customers = List.of(
-                new User("customer1@customer_domain.com", "Customer1", "Customer"),
-                new User("customer2@customer_domain.com", "Customer2", "Customer"),
-                new User("customer3@customer_domain.com", "Customer3", "Customer"),
-                new User("customer4@customer_domain.com", "Customer4", "Customer"),
-                new User("customer0@customer_domain.com", "Customer0", "Customer")
+                new User("customer1@customer-domain.com", "Customer1", "Customer"),
+                new User("customer2@customer-domain.com", "Customer2", "Customer"),
+                new User("customer3@customer-domain.com", "Customer3", "Customer"),
+                new User("customer4@customer-domain.com", "Customer4", "Customer"),
+                new User("customer0@customer-domain.com", "Customer0", "Customer")
         );
 
         customers.forEach(user -> user.addRole(customerRole));
