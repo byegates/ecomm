@@ -99,6 +99,7 @@ public class TestUtil {
     }
 
     public User getUser(String name) {
-        return userService.save(new User(String.format("%s@test-email.org", name), name, "Last"));
+        String email = String.format("%s@test-email.org", name).toLowerCase();
+        return userService.save(new User(email, name, "Last"));
     }
 }

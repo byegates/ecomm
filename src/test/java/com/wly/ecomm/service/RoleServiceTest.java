@@ -20,10 +20,11 @@ class RoleServiceTest {
     @Autowired private RoleService service;
 
     private Role role;
+    private static final String roleName = "ROLEServiceTEST_findALL".substring(0, 20);
 
     @BeforeEach
     void setUp() {
-        role = service.merge(new Role("RoleServiceTest_findALL"));
+        role = service.merge(new Role(roleName));
     }
 
     @Test
@@ -45,15 +46,15 @@ class RoleServiceTest {
 
     @Test
     void create_ignore_case() {
-        assertEquals("RoleServiceTest_findALL".toUpperCase(), role.getName());
+        assertEquals("RoleServiceTest_findALL".substring(0, 20).toUpperCase(), role.getName());
     }
 
     @Test
     void create_duplicateRole_Ignored() {
-        var role2 = service.merge(new Role("ROLEServiceTEST_findALL"));
+        var role2 = service.merge(new Role(roleName));
         assertEquals(role.getId(), role2.getId());
         assertEquals(role.getName(), role2.getName());
-        assertEquals("ROLEServiceTEST_findALL".toUpperCase(), role2.getName());
+        assertEquals(roleName.toUpperCase(), role2.getName());
     }
 
     @Test

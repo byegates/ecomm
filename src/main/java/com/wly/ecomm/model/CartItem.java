@@ -2,6 +2,7 @@ package com.wly.ecomm.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,6 +25,7 @@ public class CartItem {
     @MapsId("productId")
     private Product product;
 
+    @Positive(message = "Item quantity must be positive.")
     private int quantity;
 
     public CartItem(User user, Product product) {

@@ -7,6 +7,7 @@ import com.wly.ecomm.model.CartItem;
 import com.wly.ecomm.model.User;
 import com.wly.ecomm.service.ShoppingCartService;
 import com.wly.ecomm.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,7 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody User user) {
+    public User create(@Valid @RequestBody User user) {
         return service.save(user);
     }
 

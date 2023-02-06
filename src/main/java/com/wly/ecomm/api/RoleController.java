@@ -2,6 +2,7 @@ package com.wly.ecomm.api;
 
 import com.wly.ecomm.model.Role;
 import com.wly.ecomm.service.RoleService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ public class RoleController {
     }
 
     @PostMapping
-    public Role create(@RequestBody Role role) {
+    public Role create(@Valid @RequestBody Role role) {
         return service.merge(role);
     }
 
