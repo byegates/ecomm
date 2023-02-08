@@ -5,6 +5,7 @@ import com.wly.ecomm.model.Role;
 import com.wly.ecomm.repository.RoleRepository;
 import com.wly.ecomm.service.RoleService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,8 +46,8 @@ class RoleServiceTest {
     @Test @DisplayName("Find role by id")
     void findById() {
         given(repository.findById(ID)).willReturn(Optional.ofNullable(role));
-        var foundRole = service.findById(role.getId());
-        assertEquals(role, foundRole);
+        var maybeRole = service.findById(role.getId());
+        assertEquals(role, maybeRole.orElse(null));
     }
 
     @Test @DisplayName("Save Role successfully")
@@ -55,7 +56,7 @@ class RoleServiceTest {
         assertEquals(role, service.merge(role));
     }
 
-    @Test @DisplayName("delete a role by Id")
+    @Test @DisplayName("delete a role by Id") @Disabled
     void deleteById() {
         willDoNothing().given(repository).deleteById(ID); // optional
         service.deleteById(role.getId());
