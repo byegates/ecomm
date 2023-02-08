@@ -60,43 +60,4 @@ public class ProductService {
         return product;
     }
 
-    @Transactional
-    public List<Product> initProduct() {
-        var BOGO50 = new Deal("BOGO50", "BUY ONE GET ONE 50% OFF");
-        var BOGO100 = new Deal("BOGO100", "BUY ONE GET ONE FREE");
-        var OFF35 = new Deal("OFF35", "35% OFF");
-        var OFF20 = new Deal("OFF20", "20% OFF");
-
-
-        // products with deal buy one, get one 50% off
-        var products1 = List.of(
-                new Product("iPhone 14 128GB", 799.00),
-                new Product("iPhone 14 Plus 128GB", 899.00)
-        );
-        BOGO50.addProducts(products1);
-        dealService.save(BOGO50);
-
-        // products with deal 35% off
-        var products2 = List.of(
-                new Product("iPhone 14 Pro 128GB", 999.00),
-                new Product("iPhone 14 Pro Max 128GB", 1099.00)
-        );
-        OFF35.addProducts(products2);
-        dealService.save(OFF35);
-
-        Product product5 = new Product("iPhone 14 256GB", 899.00);
-        product5.addDeal(BOGO100);
-        repository.save(product5);
-        Product product6 = new Product("iPhone 14 Plus 256GB", 999.00);
-        product6.addDeal(OFF20);
-        repository.save(product6);
-
-        // products without deals
-        repository.saveAll(List.of(
-                new Product("iPhone 14 Pro 256GB", 1099.00),
-                new Product("iPhone 14 Pro Max 256GB", 1199.00)
-        ));
-
-        return repository.findAll();
-    }
 }
