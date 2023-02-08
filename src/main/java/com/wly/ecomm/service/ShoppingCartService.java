@@ -115,35 +115,4 @@ public class ShoppingCartService {
                 .build();
     }
 
-    public void initCartItem(List<User> customers, List<Product> products) {
-        var product1_BOGO50 = products.get(0);
-        var product2_BOGO50 = products.get(1);
-        var product3_OFF35 = products.get(2);
-        var product4_OFF35 = products.get(3);
-        var product5_BOGO100 = products.get(4);
-        var product6_OFF20 = products.get(5);
-        var product7_NODEAL = products.get(6);
-        var product8_NODEAL = products.get(7);
-
-        UUID userId0 = customers.get(0).getId();
-        addProduct(userId0, product1_BOGO50.getId(), 2);
-        addProduct(userId0, product3_OFF35.getId(), 1);
-
-        UUID userId1 = customers.get(1).getId();
-        addProduct(userId1, product2_BOGO50.getId(), 3);
-        addProduct(userId1, product4_OFF35.getId(), 2);
-
-        UUID userId2 = customers.get(2).getId();
-        addProduct(userId2, product5_BOGO100.getId(), 4);
-        addProduct(userId2, product6_OFF20.getId(), 1);
-
-        UUID userId3 = customers.get(3).getId();
-        addProduct(userId3, product5_BOGO100.getId(), 5);
-        addProduct(userId3, product6_OFF20.getId(), 3);
-        addProduct(userId3, product7_NODEAL.getId(), 2);
-
-        UUID userId4 = customers.get(4).getId();
-        addProduct(userId4, product7_NODEAL.getId(), 1);
-        addProduct(userId4, product8_NODEAL.getId(), 2);
-    }
 }

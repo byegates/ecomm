@@ -1,6 +1,5 @@
 package com.wly.ecomm.service;
 
-import com.wly.ecomm.exception.UserDefinedException;
 import com.wly.ecomm.model.Role;
 import com.wly.ecomm.repository.RoleRepository;
 import jakarta.transaction.Transactional;
@@ -19,12 +18,8 @@ public class RoleService {
         return repository.findAll();
     }
 
-    public Role findById(Integer id) {
-        Optional<Role> maybeRole = repository.findById(id);
-        if (maybeRole.isEmpty()) {
-            throw new UserDefinedException(String.format("Role not found with id: %s", id));
-        }
-        return maybeRole.get();
+    public Optional<Role> findById(Integer id) {
+        return repository.findById(id);
     }
 
     @Transactional

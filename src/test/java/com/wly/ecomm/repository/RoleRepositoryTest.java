@@ -1,40 +1,44 @@
 package com.wly.ecomm.repository;
 
 import com.wly.ecomm.model.Role;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest // enables h2 database directly
 @ComponentScan(basePackages = "com.wly.ecomm.*")
 class RoleRepositoryTest {
-    private final RoleRepository roleRepository;
+    @Autowired private RoleRepository repository;
 
-    @Autowired
-    public RoleRepositoryTest(RoleRepository roleRepository) {
-        this.roleRepository = roleRepository;
+    private Role role;
+
+    @BeforeEach
+    void setUp() {
+        role = new Role("TEST-ROLE");
     }
 
-    @Test
-    @Disabled
+    @Test @Disabled
     public void givenNA_whenStartOfApplication_then2RolesSaved() {
-        assertEquals(2, roleRepository.findAll().size());
+        assertEquals(2, repository.findAll().size());
     }
 
-    @Test
+    @Test @DisplayName("Save an object")
     public void givenRoleObject_whenSave_thenSavedRoleEqualsOriginalRole() {
-        Role role = new Role("TEST");
-        Role savedRole = roleRepository.save(role);
+        assertEquals(role, repository.save(role));
+    }
 
-        assertNotNull(savedRole);
-        assertNotNull(savedRole.getId());
-        assertInstanceOf(Integer.class, savedRole.getId());
-        assertTrue(savedRole.getId() > 0);
-
-        assertEquals(role.getName(), savedRole.getName());
+    @Test @DisplayName("Update name of an saved role")
+    public void givenRoleObject_whenUpdate_thenSameObjectIsUpdated() {
+        var savedRole = repository.save(role);
+        assertEquals(role, savedRole);
+        role.setName("TEST-UPDATED");
+        var updatedRole = repository.save(role);
+        assertEquals(savedRole, updatedRole);
     }
 }

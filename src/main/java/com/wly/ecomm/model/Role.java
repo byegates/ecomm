@@ -37,7 +37,7 @@ public class Role extends SimpleIdBasedEntity {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Role role = (Role) o;
-        return id != null && Objects.equals(id, role.id);
+        return id != null && id.equals(role.id) && name.equals(role.name);
     }
 
     @Override
