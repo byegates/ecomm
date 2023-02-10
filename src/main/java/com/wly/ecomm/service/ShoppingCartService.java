@@ -3,6 +3,7 @@ package com.wly.ecomm.service;
 import com.wly.ecomm.dto.CartItemDto;
 import com.wly.ecomm.dto.ReceiptDto;
 import com.wly.ecomm.dto.UserDTO;
+import com.wly.ecomm.exception.UserDefinedException;
 import com.wly.ecomm.model.*;
 import com.wly.ecomm.repository.CartItemRepository;
 import com.wly.ecomm.utils.MathUtils;
@@ -35,7 +36,10 @@ public class ShoppingCartService {
 
         int updatedQuantity = quantity;
         if (cartItem == null) {
-            cartItem = new CartItem(userService.findById(userId), productService.findById(productId));
+            var maybeUser = userService.findById(userId);
+            if (maybeUser.isEmpty())
+                throw new UserDefinedException(String.format("User not found with id: %s", userId));
+            cartItem = new CartItem(maybeUser.get(), productService.findById(productId));
         } else {
             updatedQuantity = cartItem.getQuantity() + quantity;
         }
@@ -105,14 +109,15 @@ public class ShoppingCartService {
         return totalPercentageOff;
     }
 
-    public UserDTO findUserDtoById(UUID id) {
-        User user = userService.findById(id);
-        return UserDTO.builder()
-                .email(user.getEmail())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .receiptDto(viewReceipt(user))
-                .build();
+    public Optional<UserDTO> findUserDtoById(UUID id) {
+        return userService.findById(id)
+                .map(user -> UserDTO.builder()
+                    .email(user.getEmail())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .receiptDto(viewReceipt(user))
+                    .build()
+                );
     }
 
 }

@@ -41,7 +41,7 @@ public class ProductService {
     }
 
     @Transactional
-    public List<Product> saveALl(Collection<Product> productList) {
+    public List<Product> saveAll(Collection<Product> productList) {
         return repository.saveAll(productList);
     }
 
