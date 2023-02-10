@@ -9,8 +9,11 @@ import com.wly.ecomm.service.ShoppingCartService;
 import com.wly.ecomm.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,13 +30,15 @@ public class UserController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public User create(@Valid @RequestBody User user) {
         return service.save(user);
     }
 
     @GetMapping("/{id}")
-    public UserDTO findById(@PathVariable UUID id) {
-        return shoppingCartService.findUserDtoById(id);
+    public ResponseEntity<UserDTO> findById(@PathVariable UUID id) {
+        return shoppingCartService.findUserDtoById(id)
+                .map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
@@ -42,34 +47,38 @@ public class UserController {
     }
 
     @GetMapping("/{id}/cart")
-    public List<CartItem> findByUser(@PathVariable UUID id) {
-        return shoppingCartService.findByUser(service.findById(id));
+    public ResponseEntity<List<CartItem>> findCartByUser(@PathVariable UUID id) {
+        return service.findById(id)
+                .map(user -> new ResponseEntity<>(shoppingCartService.findByUser(user), HttpStatus.OK))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ArrayList<>()));
     }
 
     @PostMapping("/{userId}/cart/add/{productId}/{quantity}")
     public CartItem addProductToCart(@PathVariable UUID userId,
                                    @PathVariable Integer productId,
                                    @PathVariable Integer quantity) {
-
         return shoppingCartService.addProduct(userId, productId, quantity);
     }
 
-    @PostMapping("/{userId}/cart/update/{productId}/{quantity}")
-    public void updateQuantity(@PathVariable UUID userId,
-                                     @PathVariable Integer productId,
-                                     @PathVariable Integer quantity) {
+    @PatchMapping("/{userId}/cart/update/{productId}/{quantity}")
+    public void updateQuantity(@PathVariable("userId") UUID userId,
+                                     @PathVariable("productId") Integer productId,
+                                     @PathVariable("quantity") Integer quantity) {
         shoppingCartService.updateQuantity(userId, productId, quantity);
     }
 
     @DeleteMapping("/{userId}/cart/remove/{productId}")
-    public void updateQuantity(@PathVariable UUID userId, @PathVariable Integer productId) {
+    public void removeProduct(@PathVariable UUID userId, @PathVariable Integer productId) {
 
         shoppingCartService.deleteByUserAndProduct(userId, productId);
     }
 
     @GetMapping("/{id}/receipt")
-    public ReceiptDto viewReceipt(@PathVariable UUID id) {
-        return shoppingCartService.viewReceipt(service.findById(id));
+    public ResponseEntity<ReceiptDto> viewReceipt(@PathVariable UUID id) {
+        return service.findById(id)
+                .map(user -> new ResponseEntity<>(shoppingCartService.viewReceipt(user), HttpStatus.OK))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(ReceiptDto.builder().build()))
+                ;
     }
 
 }

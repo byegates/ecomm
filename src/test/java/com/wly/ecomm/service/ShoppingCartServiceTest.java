@@ -1,6 +1,5 @@
 package com.wly.ecomm.service;
 
-import com.wly.ecomm.dto.UserDTO;
 import com.wly.ecomm.model.CartItem;
 import com.wly.ecomm.model.Product;
 import com.wly.ecomm.model.User;
@@ -214,7 +213,8 @@ class ShoppingCartServiceTest {
 
         cartService.addProduct(user.getId(), testUtil.getProductWithDeals(0).getId(), cartItemQuantity);
         cartService.addProduct(user.getId(), testUtil.getProductWithDeals(1).getId(), cartItemQuantity);
-        UserDTO userDTO = cartService.findUserDtoById(user.getId());
-        assertEquals(2, userDTO.getReceiptDto().getCartItems().size());
+        var userDTO = cartService.findUserDtoById(user.getId());
+        assertTrue(userDTO.isPresent());
+        assertEquals(2, userDTO.get().getReceiptDto().getCartItems().size());
     }
 }

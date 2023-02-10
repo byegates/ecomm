@@ -25,12 +25,8 @@ public class UserService {
         return repository.save(user);
     }
 
-    public User findById(UUID id) {
-        Optional<User> maybeUser = repository.findById(id);
-        if (maybeUser.isEmpty()) {
-            throw new UserDefinedException(String.format("User not found with id: %s", id));
-        }
-        return maybeUser.get();
+    public Optional<User> findById(UUID id) {
+        return repository.findById(id);
     }
 
     @Transactional

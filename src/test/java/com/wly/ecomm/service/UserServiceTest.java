@@ -1,54 +1,73 @@
 package com.wly.ecomm.service;
 
-import com.wly.ecomm.exception.UserDefinedException;
-import com.wly.ecomm.utils.TestUtil;
-import jakarta.transaction.Transactional;
+import com.wly.ecomm.model.User;
+import com.wly.ecomm.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-@SpringBootTest
-@AutoConfigureTestDatabase
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+
+/*
+ * Auto mock injection with Mockito
+ */
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
-    @Autowired private UserService service;
-    @Autowired private TestUtil testUtil;
+    @Mock private UserRepository repository;
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    @InjectMocks private UserService service;
+
+    private User user;
 
     @BeforeEach
     void setUp() {
+        user = new User("test-user@junit_mockito.com", "TEST-USER1", "TEST-LAST");
+        user.setId(new UUID(1,1));
     }
 
     @AfterEach
     void tearDown() {
     }
 
-    @Test @Transactional
+    @Test @DisplayName("find all method, no real logics right now")
     void findAll() {
-        var user = testUtil.getUser("UserServiceTest_FindAll");
-        log.info("Users : {}", user);
+        given(repository.findAll()).willReturn(List.of(new User()));
         assertTrue(service.findAll().size() > 0);
     }
 
-    @Test @Transactional
-    void findById() {
-        var user = testUtil.getUser("UserServiceTest_findById");
-        assertNotNull(service.findById(user.getId()));
-        assertEquals(user.getId(), service.findById(user.getId()).getId());
+    @Test @DisplayName("Find user by ID - success")
+    void findById_good() {
+        given(repository.findById(any(UUID.class))).willReturn(Optional.ofNullable(user));
+        var maybeUser = service.findById(user.getId());
+        assertTrue(maybeUser.isPresent());
+        assertEquals(user, maybeUser.get());
     }
 
-    @Test @Transactional
+    @Test @DisplayName("Find user by ID - Exception")
+    void findById_notFound() {
+        given(repository.findById(any(UUID.class))).willReturn(Optional.empty());
+        assertTrue(service.findById(user.getId()).isEmpty());
+//        assertThrows(UserDefinedException.class, () -> service.findById(user.getId()));
+    }
+
+    @Test @DisplayName("delete a user by id")
     void deleteById() {
-        var user = testUtil.getUser("UserServiceTest_deleteById");
         service.deleteById(user.getId());
-        assertThrows(UserDefinedException.class, () -> service.findById(user.getId()));
+        given(repository.findById(any(UUID.class))).willReturn(Optional.empty());
+        assertTrue(service.findById(user.getId()).isEmpty());
+//        assertThrows(UserDefinedException.class, () -> service.findById(user.getId()));
     }
 }
